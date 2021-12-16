@@ -48,15 +48,15 @@ exports.signup = (req, res) => {
   db.query(`SELECT * FROM user WHERE mail = ${req.body.mail}`, 
   function(err, result) {
     if (err) throw err;
-    bcrypt.compare(req.body.mot_de_passe, user(mot_de_passe))
+    bcrypt.compare(req.body.mot_de_passe, result[0].mot_de_passe)
     .then(valid => {
       if (!valid) {
         return res.status(401).json({ error: 'Mot de passe incorrect !' });
       }
       return res.status(200).json({
-        userId: result.id,
+        userId: result[0].id,
         token: jwt.sign(
-          { userId: result.id },
+          { userId: result[0].id },
           'RANDOM_TOKEN_SECRET',
           { expiresIn: '24h' }
           )
@@ -67,7 +67,8 @@ exports.signup = (req, res) => {
 };
 
 exports.updateAccount = (req, res, next) => {
-  db.query(`UPDATE user SET * = ${req.body} WHERE id = ${req.params.id};`, 
+  db.query(`UPDATE user SET ${req.body.modified} WHERE id = ${req.params.id};`, 
+  // modified devra prendra la valeur col = value, col = value
   function(err, result) {
     if (err) throw err;
     return res.status(200).json({ message: "successful !" })

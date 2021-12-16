@@ -1,7 +1,5 @@
-const { db } = require("../../../../Projet 6/Piiquante/Web-Developer-P6/backend/models/user");
-
 exports.getAllGifs = (req, res, next) => {
-    db.query("SELECT * FROM gif;", 
+    db.query("SELECT * FROM gif ORDER BY date;", 
         function(err, result) {
             if (err) throw err;
             return res.status(200).json({ message: "successful !" })
@@ -17,9 +15,10 @@ exports.getOneGif = (req, res, next) => {
 }
 
 exports.shareGif = (req, res, next) => {
+    let date = new Date;
     db.query(`INSERT INTO gif 
     (titre, url, user_id) VALUES 
-    (${req.body.titre}, ${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.user(id)});`,
+    (${req.body.titre}, ${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.id}, ${date.toLocaleString()});`,
     function(err, result) {
         if (err) throw err;
         return res.status(200).json({ message: "successful !" })
@@ -35,7 +34,7 @@ exports.deleteGif = (req, res, next) => {
 }
 
 exports.showComments = (req, res, next) => {
-    db.query(`SELECT * FROM commentaire WHERE gif_id = ${req.params.id};`, 
+    db.query(`SELECT * FROM commentaire WHERE gif_id = ${req.params.id} ORDER BY date;`, 
     function(err, result) {
         if (err) throw err;
         return res.status(200).json({ message: "successful !" })
@@ -43,8 +42,9 @@ exports.showComments = (req, res, next) => {
 }
 
 exports.addComment = (req, res, next) => {
+    let date = new Date;
     db.query(`INSERT INTO commentaire VALUES 
-    (${req.body.contenu}, ${Date.now()}, ${req.body.user(id)}, ${req.params.id});`,
+    (${req.body.contenu}, ${date.toLocaleString()}, ${req.body.user(id)}, ${req.params.id});`,
     function(err, result) {
         if (err) throw err;
         return res.status(200).json({ message: "successful !" })

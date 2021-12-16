@@ -3,7 +3,6 @@ const express = require('express');
 const mysql = require('mysql2');
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gif');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -30,9 +29,6 @@ app.use((req, res, next) => {
 
 /*module express pour pouvoir lire les requêtes (remplace body-parser)*/
 app.use(express.json());
-
-/*création du dossier gifs*/
-app.use('/gifs', express.static(path.join(__dirname, 'gifs')));
 
 /*utilisation des routes*/
 app.use("/api/auth", userRoutes);
