@@ -2,9 +2,9 @@
 const express = require("express");
 const router = express.Router();
 
-/*import du middleware d'authentification et de multer configuré*/
+/*import du middleware d'authentification et de multer configuré pour les gifs*/
 const auth = require("../middlewares/auth");
-const multer = require("../middlewares/multer-config");
+const multer = require("../middlewares/multer-config-gif");
 
 /*import contrôleur*/
 const gifCtrl = require("../controllers/gif");
@@ -19,11 +19,11 @@ const gifCtrl = require("../controllers/gif");
  * suppression d'un commentaire
  */
 router.get('/', auth, gifCtrl.getAllGifs);
-router.get('/:id', auth, gifCtrl.getOneGif);
+router.get('/:gifId', auth, gifCtrl.getOneGif);
 router.post('/', auth, multer, gifCtrl.shareGif);
-router.delete('/:id', auth, gifCtrl.deleteGif);
-router.get('/:id/comments', auth, gifCtrl.showComments);
-router.post('/:id/comments', auth, gifCtrl.addComment);
-router.delete('/:id/comments/:idComment', auth, gifCtrl.deleteComment);
+router.delete('/:gifId', auth, gifCtrl.deleteGif);
+router.get('/:gifId/comments', auth, gifCtrl.showComments);
+router.post('/:gifId/comments', auth, gifCtrl.addComment);
+router.delete('/:gifId/comments/:idComment', auth, gifCtrl.deleteComment);
 
 module.exports = router;
