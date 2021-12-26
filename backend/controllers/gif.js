@@ -14,20 +14,12 @@ exports.getAllGifs = (req, res, next) => {
         })
 }
 
-// exports.getOneGif = (req, res, next) => {
-//     db.db.query(`SELECT * FROM gif WHERE id = ${req.params.gifId}`,
-//         function(err, result) {
-//             if (err) throw err;
-//             return res.status(200).json({ message: "successful !" })
-//         })
-// }
-
 exports.shareGif = (req, res, next) => {
     let date = new Date;
     if (req.file) {
         db.db.query(`INSERT INTO gif 
         (titre, url, user_id, date) VALUES 
-        (${req.body.titre}, ${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.userId}, ${date.toLocaleString()});`,
+        ("${req.body.titre}", "${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.userId}", "${date.toLocaleString()}");`,
         function(err, result) {
             if (err) throw err;
             return res.status(200).json({ message: "successful !" })
@@ -35,10 +27,18 @@ exports.shareGif = (req, res, next) => {
     } else {
         db.db.query(`INSERT INTO gif 
         (titre, url, user_id, date) VALUES 
-        (${req.body.titre}, ${req.body.url}, ${req.body.userId}, ${date.toLocaleString()});`,
+        ("${req.body.titre}", "${req.body.url}", "${req.body.userId}", "${date.toLocaleString()}");`,
         function(err, result) {
             if (err) throw err;
-            return res.status(200).json({ message: "successful !" })
+            return res.status(200).json({
+                gif: {
+                    id: result.insertId,
+                    titre: req.body.titre,
+                    url: req.body.url,
+                    userId: req.body.userId,
+                    date: date.toLocaleString()
+                }
+            })
         })
     }
 }
@@ -55,17 +55,27 @@ exports.showComments = (req, res, next) => {
     db.db.query(`SELECT * FROM commentaire WHERE gif_id = ${req.params.gifId} ORDER BY date;`, 
     function(err, result) {
         if (err) throw err;
-        return res.status(200).json({ message: "successful !" })
+        return res.status(200).json({
+            commentaires: result
+        })
     })  
 }
 
 exports.addComment = (req, res, next) => {
     let date = new Date;
-    db.db.query(`INSERT INTO commentaire VALUES 
-    (${req.body.contenu}, ${date.toLocaleString()}, ${req.body.userId}, ${req.params.gifId});`,
+    db.db.query(`INSERT INTO commentaire (contenu, date, user_id, gif_id) VALUES 
+    ("${req.body.contenu}", "${date.toLocaleString()}", "${req.body.userId}", "${req.params.gifId}");`,
     function(err, result) {
         if (err) throw err;
-        return res.status(200).json({ message: "successful !" })
+        return res.status(200).json({
+            commentaire: {
+                id: result.insertId,
+                contenu: req.body.contenu,
+                date: date.toLocaleString(),
+                user_id: req.body.userId,
+                gif_id: req.params.gifId
+            }
+        })
     })  
 }
 

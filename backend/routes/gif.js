@@ -11,7 +11,6 @@ const gifCtrl = require("../controllers/gif");
 
 /** routeurs :
  * affichage de tous les gifs
- * affichage d'un seul gif
  * partage d'un gif
  * suppression d'un gif
  * affichage de tous les commentaires d'un gif
@@ -19,7 +18,6 @@ const gifCtrl = require("../controllers/gif");
  * suppression d'un commentaire
  */
 router.get('/', auth, gifCtrl.getAllGifs);
-// router.get('/:gifId', auth, gifCtrl.getOneGif);
 router.post('/', auth, multer, gifCtrl.shareGif);
 router.delete('/:gifId', auth, gifCtrl.deleteGif);
 router.get('/:gifId/comments', auth, gifCtrl.showComments);

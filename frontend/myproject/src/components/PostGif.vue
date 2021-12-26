@@ -22,7 +22,9 @@
 export default {
     name: 'PostGif',
     data() {
-        return {}
+        return {
+            gifs: []
+        }
     },
     methods: {
         showContainer() {
@@ -41,6 +43,10 @@ export default {
             }
         },
         addGif() {
+            fetch("http://localhost:3000/api/gifs/")
+            .then(res => res.json())
+            .then(data => this.gifs = data)
+
             if (document.getElementById("urlBox").style.display == "block") {
                 let userId = JSON.parse(localStorage.getItem("userId"));
 
@@ -56,7 +62,7 @@ export default {
                     body: JSON.stringify({ titre, userId, url })
                 })
                 .then(res => res.json())
-                .then(() => document.getElementById("urlBox").style.display == "none")
+                .then(gif => this.gifs.push(gif))
                 .catch(err => console.log(err.message))
 
             } else if (document.getElementById("fileBox").style.display == "block") {
@@ -74,7 +80,6 @@ export default {
                     body: JSON.stringify({ titre, userId, file })
                 })
                 .then(res => res.json())
-                .then(() => document.getElementById("fileBox").style.display == "none")
                 .catch(err => console.log(err.message))
             }
             document.getElementById("container").style.display = "none";

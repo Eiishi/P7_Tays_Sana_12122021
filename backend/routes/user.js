@@ -13,14 +13,12 @@ const userCtrl = require("../controllers/user");
  * connexion
  * modification
  * suppression
- * affichage de tous les utilisateurs
  * affichage d'un utilisateur
  */
 router.post('/signup', multer, userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.put('/profile/:userId', auth, multer, userCtrl.updateAccount);
 router.delete('/profile/:userId', auth, userCtrl.deleteAccount);
-// router.get('/', auth, userCtrl.getAllUsers);
 router.get('/profile/:userId', auth, userCtrl.getOneUser);
 
 module.exports = router;
