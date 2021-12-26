@@ -1,23 +1,9 @@
 /*imports*/
 const express = require('express');
-const mysql = require('mysql2');
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gif');
-require('dotenv').config();
 
 const app = express();
-
-/*connexion à MySQL*/
-const db = mysql.createConnection ({
-    host: "localhost",
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DATABASE
-});
-db.connect (function(err) {
-if (err) throw err;
-console.log("Connexion à MySQL réussie !");
-});
 
 /*application des headers à la réponse pour accepter des requêtes de toutes les origines*/
 app.use((req, res, next) => {

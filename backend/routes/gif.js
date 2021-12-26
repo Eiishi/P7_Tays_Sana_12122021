@@ -19,7 +19,7 @@ const gifCtrl = require("../controllers/gif");
  * suppression d'un commentaire
  */
 router.get('/', auth, gifCtrl.getAllGifs);
-router.get('/:gifId', auth, gifCtrl.getOneGif);
+// router.get('/:gifId', auth, gifCtrl.getOneGif);
 router.post('/', auth, multer, gifCtrl.shareGif);
 router.delete('/:gifId', auth, gifCtrl.deleteGif);
 router.get('/:gifId/comments', auth, gifCtrl.showComments);
