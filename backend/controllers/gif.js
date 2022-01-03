@@ -2,7 +2,7 @@ const db = require('../config/databaseConfig');
 
 exports.getAllGifs = (req, res, next) => {
     let gifs = [];
-    db.db.query("SELECT * FROM gif ORDER BY date;", 
+    db.db.query("SELECT * FROM gif ORDER BY date DESC;", 
         function(err, result) {
             for (let i = 0; i < result.length; i++) {
                 gifs.push(result[i])
@@ -22,8 +22,16 @@ exports.shareGif = (req, res, next) => {
         ("${req.body.titre}", "${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.userId}", "${date.toLocaleString()}");`,
         function(err, result) {
             if (err) throw err;
-            return res.status(200).json({ message: "successful !" })
-        })  
+            return res.status(200).json({
+                gif: {
+                    id: result.insertId,
+                    titre: req.body.titre,
+                    url: req.get('host') + "/gifs/" + req.file.filename,
+                    userId: req.body.userId,
+                    date: date.toLocaleString()
+                }
+            }) 
+        }) 
     } else {
         db.db.query(`INSERT INTO gif 
         (titre, url, user_id, date) VALUES 

@@ -1,7 +1,8 @@
 <template>
+    <h1>Mon profil</h1>
     <img>
-    <p>{{ user.nom }} {{ user.prenom }}</p>
-    <p>{{ user.mail }}</p>
+    <p id="nom"></p>
+    <p id="mail"></p>
     <div>
         <router-link to="/profile/update">
         <button>Modifier le profil</button>
@@ -17,18 +18,25 @@
 export default {
     name: "PageProfil",
     data() {
-        return {
-            user: []
-        }
+        return {}
     },
     mounted() {
+
+        document.getElementById("nav").style.display = "none";
+
         let userId = JSON.parse(localStorage.getItem("userId"));
 
-        fetch('http:localhost:3000/api/auth/profile/' + userId)
+        fetch('http://localhost:3000/api/auth/profile/' + userId, {
+            method: "GET",
+            headers: {
+                "authorization": `${localStorage.getItem("token")}`
+            }
+        })
         .then(res => res.json())
         .then(user => {
-            this.user = user;
-            document.querySelector("img").setAttribute("src", this.user.photo_url);
+            document.querySelector("img").setAttribute("src", user.user.photo_url);
+            document.getElementById("nom").textContent = user.user.nom + " " + user.user.prenom;
+            document.getElementById("mail").textContent = user.user.mail;
         })
         .catch(err => console.log(err.message))
     },
@@ -40,7 +48,8 @@ export default {
             method: "DELETE",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "authorization": `${localStorage.getItem("token")}`
             }
             .then(res => res.json())
             .catch(err => console.log(err.message))
@@ -49,3 +58,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+img {
+    height: 100px;
+}
+</style>

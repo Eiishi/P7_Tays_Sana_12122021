@@ -104,17 +104,16 @@ exports.updateAccount = (req, res, next) => {
   if (validatePassword(req.body.mot_de_passe) == false) {
     return res.status(400).json({ message: 'Niveau de sécurité du mot de passe trop faible.'});
   } else {
-    console.log(req.body.mot_de_passe);
     bcrypt.hash(req.body.mot_de_passe, 10)
     .then(hash => {
       if (req.file) {
-        db.db.query(`UPDATE user SET (${req.body.modified}, mot_de_passe = "${hash}", photo_url = "${req.protocol}://${req.get('host')}/photos/${req.file.filename}") WHERE id = ${req.params.userId};`, 
+        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}", photo_url = "${req.protocol}://${req.get('host')}/photos/${req.file.filename}" WHERE id = ${req.params.userId};`, 
         function(err, result) {
           if (err) throw err;
           return res.status(200).json({ message: "successful !" })
       })
       } else {
-        db.db.query(`UPDATE user SET (${req.body.modified}, mot_de_passe = "${hash}") WHERE id = ${req.params.userId};`, 
+        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}" WHERE id = ${req.params.userId};`, 
         function(err, result) {
           if (err) throw err;
           return res.status(200).json({ message: "successful !" })
@@ -133,16 +132,6 @@ exports.deleteAccount = (req, res, next) => {
     return res.status(200).json({ message: "successful !" })
   })
 }
-
-/* afficher les utilisateurs */
-
-// exports.getAllUsers = (req, res, next) => {
-//   db.db.query("SELECT * FROM user",
-//   function(err, result) {
-//     if (err) throw err;
-//     return res.status(200).json({ message: "successful !" })
-//   })
-// }
 
 /* afficher un utilisateur */
 

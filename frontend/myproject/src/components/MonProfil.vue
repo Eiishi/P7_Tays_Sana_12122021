@@ -1,8 +1,11 @@
 <template>
     <div>
         <router-link to="/profile">
-        <img>
-        <p>{{ user.nom }} {{ user.prenom }}</p>
+        <img id="profilePic">
+        <p></p>
+        </router-link>
+        <router-link to="/">
+        <p>Déconnexion</p>
         </router-link>
         <router-view></router-view>
     </div>
@@ -13,22 +16,29 @@ export default {
     name: "MonProfil",
     data() {
         return {
-            user: []
         }
     },
     mounted() {
         let userId = JSON.parse(localStorage.getItem("userId"));
 
-        fetch('http:localhost:3000/api/auth/profile/' + userId)
-        // problème de réponse dans le navigateur
+        fetch('http://localhost:3000/api/auth/profile/' + userId, {
+            method: "GET",
+            headers: {
+                "authorization": `${localStorage.getItem("token")}`
+            }
+        })
         .then(res => res.json())
         .then(user => {
-            this.user = user;
-            document.querySelector("img").setAttribute("src", this.user.photo_url);
-            document.querySelector("p").textContent = this.user.nom + this.user.prenom;
+            document.getElementById("profilePic").setAttribute("src", user.user.photo_url);
+            document.querySelector("p").textContent = user.user.prenom + " " + user.user.nom;
         })
         .catch(err => console.log(err.message))
-
     }
 }
 </script>
+
+<style scoped>
+img {
+    height: 40px;
+}
+</style>

@@ -3,20 +3,21 @@
     <div>
         <label for="nom">Nom : </label><br>
         <input type="text" name="nom" id="nom"><br>
-        <p id="nomErrMsg"></p>
+        <p id="nomErrMsg" class="error"></p>
         <label for="prenom">Prénom : </label><br>
         <input type="text" name="prenom" id="prenom"><br>
-        <p id="prenomErrMsg"></p>
+        <p id="prenomErrMsg" class="error"></p>
         <label for="mail">E-mail : </label><br>
         <input type="email" name="mail" id="mail"><br>
-        <p id="mailErrMsg"></p>
+        <p id="mailErrMsg" class="error"></p>
         <label for="mot_de_passe">Mot de passe : </label><br>
         <input type="password" name="mot_de_passe" id="mot_de_passe"><br>
+        <p id="mdpErrMsg" class="error"></p>
         <label for="mot_de_passe_confirm">Confirmer mot de passe : </label><br>
         <input type="password" name="mot_de_passe_confirm" id="mot_de_passe_confirm"><br>
-        <p id="mdpErrMsg"></p>
+        <p id="mdpErrMsg2" class="error"></p>
         <label for="photo">Photo de profil (optionnel)</label><br>
-        <input type="file" name="photo" id="photo"><br>
+        <input type="file" name="photo" accept="image/png, image/jpeg" id="photo"><br>
         <button id="inscription" @click="pressed">S'inscrire</button>
     </div>
 </template>
@@ -28,34 +29,84 @@ export default {
         return {
         }
     },
+    mounted() {
+
+        function validateName(string) {
+            /*eslint-disable-next-line*/
+            return /^[a-z\-\é\è\ë\ï]+( [a-z\é\è\ë\ï]+)*$/i.test(string);
+        }
+
+        function validateEmail(email) {
+            return /\S+@\S+\.\S+/.test(email);
+        }
+
+        function validatePassword(password) {
+            return /\S{8,}/.test(password);
+        }
+
+        let nom = document.getElementById("nom");
+        let prenom = document.getElementById("prenom");
+        let mail = document.getElementById("mail");
+        let mot_de_passe = document.getElementById("mot_de_passe");
+        let mot_de_passe_confirm = document.getElementById("mot_de_passe_confirm");
+
+        nom.addEventListener("change", () => {
+
+            if (validateName(nom.value) == false || nom.value == "") {
+                document.getElementById("nomErrMsg").textContent = "Veuillez entrer un nom valide."
+            } else {
+                document.getElementById("nomErrMsg").textContent = ""
+            }
+        })
+        prenom.addEventListener("change", () => {
+
+            if (validateName(prenom.value) == false || prenom.value == "") {
+                document.getElementById("prenomErrMsg").textContent = "Veuillez entrer un prénom valide."
+            } else {
+                document.getElementById("prenomErrMsg").textContent = ""
+            }
+        })
+        mail.addEventListener("change", () => {
+
+            if (validateEmail(mail.value) == false || mail.value == "") {
+                document.getElementById("mailErrMsg").textContent = "Veuillez entrer une adresse mail valide."
+            } else {
+                document.getElementById("mailErrMsg").textContent = ""
+            }
+        })
+        mot_de_passe.addEventListener("change", () => {
+
+            if (validatePassword(mot_de_passe.value) == false || mot_de_passe.value == "") {
+                document.getElementById("mdpErrMsg").textContent = "Niveau de sécurité du mot de passe trop faible."
+            } else {
+                document.getElementById("mdpErrMsg").textContent = ""
+            }
+        })
+        mot_de_passe_confirm.addEventListener("change", () => {
+
+            if (mot_de_passe.value !== mot_de_passe_confirm.value || mot_de_passe_confirm.value == "") {
+                document.getElementById("mdpErrMsg2").textContent = "Veuillez confirmer votre mot de passe."
+            } else {
+                document.getElementById("mdpErrMsg2").textContent = ""
+            }
+        })
+    },
     methods: {
         pressed() {
-            function validateName(string) {
-                /*eslint-disable-next-line*/
-                return /^[a-z\-\é\è\ë\ï]+( [a-z\é\è\ë\ï]+)*$/i.test(string);
-            }
-
-            function validateEmail(email) {
-                return /\S+@\S+\.\S+/.test(email);
-            }
 
             let nom = document.getElementById("nom").value;
             let prenom = document.getElementById("prenom").value;
             let mail = document.getElementById("mail").value;
             let mot_de_passe = document.getElementById("mot_de_passe").value;
             let mot_de_passe_confirm = document.getElementById("mot_de_passe_confirm").value;
-            let photo = document.getElementById("photo").value;
-    
-            if (validateName(nom) == false || nom == "") {
-                document.getElementById("nomErrMsg").textContent = "Veuillez entrer un nom valide."
-            } else if (validateName(prenom) == false || prenom == "") {
-                document.getElementById("prenomErrMsg").textContent = "Veuillez entrer un prénom valide."
-            } else if (validateEmail(mail) == false || mail == "") {
-                document.getElementById("mailErrMsg").textContent = "Veuillez entrer une adresse mail valide."
-            } else if (mot_de_passe !== mot_de_passe_confirm || mot_de_passe == "" || mot_de_passe_confirm == "") {
-                document.getElementById("mdpErrMsg").textContent = "Veuillez confirmer votre mot de passe."
-            } else {
+            let photo = document.getElementById("photo");
                 
+            if (nom !== "" && document.getElementById("nomErrMsg").textContent === "" &&
+                prenom !== "" && document.getElementById("prenomErrMsg").textContent === "" &&
+                mail !== "" && document.getElementById("mailErrMsg").textContent === "" &&
+                mot_de_passe !== "" && document.getElementById("mdpErrMsg").textContent === "" &&
+                mot_de_passe_confirm !== "" && document.getElementById("mdpErrMsg2").textContent === "") {  
+                    
                 fetch("http://localhost:3000/api/auth/signup", {
                     method: "POST",
                     headers: {
@@ -66,18 +117,25 @@ export default {
                 })
                 .then(res => res.json())
                 .then(data => {
-                    localStorage.userId = JSON.stringify(data.userId)
+                    localStorage.userId = JSON.stringify(data.userId);
+                    localStorage.token = JSON.stringify(data.token);
                 })
                 .then(() => {
                     window.location = "http://localhost:8080/#/home";
+                    document.getElementById("nav").style.display = "none";
                 })
                 .catch(err => console.log(err.message))
 
+            } else {
+                alert("Votre formulaire contient des erreurs ou des champs non renseignés.")
             }
         }
     }
 }
 </script>
 
-<style scoped>
+<style>
+.error {
+    color: red;
+}
 </style>

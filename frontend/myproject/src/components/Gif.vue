@@ -6,233 +6,327 @@
 export default {
     name: "Gif",
     data() {
-        return {
-            gifs: [],
-            comments: [],
-            gifUser: [],
-            users: []
-        }
+        return {}
     },
     mounted() {
 
+        document.getElementById("nav").style.display = "none";
+
 /* requêtes pour récupérer chaque gif et l'utilisateur associé
 dans les objets gif et gifUser */
-        fetch("http://localhost:3000/api/gifs/")
+        fetch("http://localhost:3000/api/gifs/", {
+            method: "GET",
+            headers: {
+                "authorization": `${localStorage.getItem("token")}`
+            }
+        })
         .then(res => res.json())
-        .then(data => {
-            this.gifs = data;
-            for (let i = 0; i < this.gifs.length; i++) {
+        .then(gifs => {
+            for (let i = 0; i < gifs.gifs.length; i++) {
 
-                    let userId = this.gifs[i].user_id;
-                    fetch('http:localhost:3000/api/auth/profile/' + userId)
-                    .then(res => res.json())
-                    .then(user => this.gifUser.push(user))
-                    .then(() => {
+                let userId = gifs.gifs[i].user_id;
+                fetch('http://localhost:3000/api/auth/profile/' + userId, {
+                    method: "GET",
+                    headers: {
+                        "authorization": `${localStorage.getItem("token")}`
+                    }
+                })
+                .then(res => res.json())
+                .then(user => {
 
             /*affichage de l'utilisateur qui a posté le gif :
             photo de profil + nom*/
-                        document.createElement("img");
-                        document.querySelector("img").setAttribute("id", "profile");
-                        document.createElement("p");
-                        document.querySelector("p").setAttribute("id", "nom");
-                        document.getElementById("nom").textContent = this.gifUser[i].nom + this.gifUser[i].prenom;
+                    let displayGifs = document.getElementById("displayGifs");
+                    let profile = document.createElement("img");
+                    profile.classList.add("profile");
+                    let nom = document.createElement("p");
+                    nom.classList.add("nom");
+                    nom.textContent = user.user.prenom + " " + user.user.nom;
+            /* titre du gif */
+                    let titre = document.createElement("h2");
+                    titre.classList.add("titre");
+                    titre.textContent = gifs.gifs[i].titre;
             /*date du gif*/
-                        document.createElement("p");
-                        document.querySelector("p").setAttribute("id", "date");
-                        document.getElementById("date").textContent = this.gifs[i].date;
+                    let date = document.createElement("p");
+                    date.classList.add("date");
+                    date.textContent = gifs.gifs[i].date;
             /*gif*/
-                        document.createElement("img");
-                        document.querySelector("img").setAttribute("id", "gif");
-                        document.querySelector("img").setAttribute("data-id", this.gifs[i].id);
+                    let gifImg = document.createElement("img");
+                    gifImg.classList.add("gif");
+                    gifImg.setAttribute("data-id", gifs.gifs[i].id);
+                    gifImg.setAttribute("title", gifs.gifs[i].url);
             /*bouton supprimer*/
-                        document.createElement("p");
-                        document.querySelector("p").setAttribute("id", "supprimer");
-                        document.querySelector("p").setAttribute("@click", "deleteGif");
-                        document.getElementById("supprimer").textContent = "Supprimer";
+                    let supprimer = document.createElement("p");
+                    supprimer.classList.add("supprimer");
+                    supprimer.addEventListener("click", this.deleteGif);
+                    supprimer.setAttribute("data-id", gifs.gifs[i].id);
+                    supprimer.textContent = "Supprimer";
             /*bouton pour afficher les commentaires*/
-                        document.createElement("p");
-                        document.querySelector("p").setAttribute("id", "showComments");
-                        document.getElementById("showComments").setAttribute("@click", "showComments");
-                        document.getElementById("showComments").textContent = "Commentaires";
+                    let showComments = document.createElement("p");
+                    showComments.classList.add("showComments");
+                    showComments.addEventListener("click", this.showComments);
+                    showComments.setAttribute("data-id", gifs.gifs[i].id);
+                    showComments.textContent = "Commentaires";
             /*boîte à commentaires*/
-                        document.createElement("div");
-                        document.querySelector("div").setAttribute("id", "container");
+                    let containerBox = document.createElement("div");
+                    containerBox.classList.add("containerBox");
             /*bouton pour ajouter un commentaire*/
-                        document.createElement("p");
-                        document.querySelector("p").setAttribute("id", "addComment");
-                        document.getElementById("addComment").setAttribute("@click", "addComment");
-                        document.getElementById("addComment").textContent = "Ajouter un commentaire";
-                        document.createElement("div");
-                        document.querySelector("div").setAttribute("id", "commentBox");
+                    let addComment = document.createElement("p");
+                    addComment.classList.add("addComment");
+                    addComment.addEventListener("click", this.addComment);
+                    addComment.setAttribute("data-id", gifs.gifs[i].id);
+                    addComment.textContent = "Ajouter un commentaire";
+                    let commentBox = document.createElement("div");
+                    commentBox.classList.add("commentBox");
             /* hiérarchisation */
-                        document.getElementById("displayGifs").appendChild(document.getElementById("profile"));
-                        document.getElementById("displayGifs").appendChild(document.getElementById("nom"));
-                        document.getElementById("displayGifs").appendChild(document.getElementById("date"));
-                        document.getElementById("displayGifs").appendChild(document.getElementById("gif"));
-                        document.getElementById("displayGifs").appendChild(document.getElementById("supprimer"));
+                    displayGifs.appendChild(profile);
+                    displayGifs.appendChild(nom);
+                    displayGifs.appendChild(titre);
+                    displayGifs.appendChild(date);
+                    displayGifs.appendChild(gifImg);
+                    displayGifs.appendChild(supprimer);
+                    displayGifs.appendChild(showComments);
+                    displayGifs.appendChild(containerBox);
+                    displayGifs.appendChild(addComment);
+                    displayGifs.appendChild(commentBox);
             /* affichage des données stockées */
-                        document.getElementById("profile").setAttribute("src", this.gifUser[i].photo_url);
-                        document.getElementById("gif").setAttribute("src", this.gifs[i].url);
-                    })
+                    profile.setAttribute("src", user.user.photo_url);
+                    gifImg.setAttribute("src", gifs.gifs[i].url);
+                })
+
+/* requête pour vérifier que l'utilisateur a le droit de supprimer le gif */
+                userId = JSON.parse(localStorage.getItem("userId"));
+
+                fetch('http://localhost:3000/api/auth/profile/' + userId, {
+                    method: "GET",
+                    headers: {
+                        "authorization": `${localStorage.getItem("token")}`
+                    }
+
+                })
+                .then(res => res.json())
+                .then(user => {
+
+                    if (userId !== gifs.gifs[i].user_id && user.user.moderateur === 0) {
+                        document.getElementsByClassName("supprimer")[i].style.visibility = "hidden"
+                    }
+                })
             }
         })
         .catch(err => console.log(err.message))
-
-
-/* requête pour vérifier que l'utilisateur a le droit de supprimer le gif */
-        let userId = JSON.parse(localStorage.getItem("userId"));
-
-        fetch('http:localhost:3000/api/auth/profile/' + userId)
-        .then(res => res.json())
-        .then(user => {
-
-            if (userId === this.gif.user_id || user.moderateur == 1) {
-                document.getElementById("supprimer").style.visibility = "visible"
-            }
-        })
     },
     methods: {
-/* requête pour supprimer un gif */
-        deleteGif() {
-            for (let i = 0; i < this.gifs.length; i++) {
+        /* requête pour supprimer un gif */
+        deleteGif(e) {
 
-                if (this.gifs[i].id == document.getElementById("gif").dataset.id) {
-
-                    let gifId = this.gifs[i].id;
-                    fetch("http://localhost:3000/api/gifs/" + gifId, {
-                        method: "DELETE",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(() => this.gifs.pull(this.gifs[i]))
-                    .catch(err => console.log(err.message))
-                
+            fetch("http://localhost:3000/api/gifs/", {
+                method: "GET",
+                headers: {
+                    "authorization": `${localStorage.getItem("token")}`
                 }
-            }
+            })
+            .then(res => res.json())
+            .then(gifs => {
+
+                for (let i = 0; i < gifs.gifs.length; i++) {
+
+                    if (gifs.gifs[i].id == e.target.dataset.id) {
+                    
+                        let gifId = gifs.gifs[i].id;
+                        fetch("http://localhost:3000/api/gifs/" + gifId, {
+                            method: "DELETE",
+                            headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "authorization": `${localStorage.getItem("token")}`
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(() => location.reload())
+                        .catch(err => console.log(err.message))
+                    }
+                }
+            })
         },
 
 /* afficher les commentaires d'un gif */
-        showComments() {
+        showComments(e) {
+                        
+            fetch("http://localhost:3000/api/gifs/", {
+                method: "GET",
+                headers: {
+                    "authorization": `${localStorage.getItem("token")}`
+                }
+            })
+            .then(res => res.json())
+            .then(gifs => {
+                
+                for (let i = 0; i < gifs.gifs.length; i++) {
+                    
+                    if (gifs.gifs[i].id == e.target.dataset.id) {
+                        e.target.style.display = "none";
+                        
+                        let gifId = gifs.gifs[i].id;
 
-            for (let i = 0; i < this.gifs.length; i++) {
+                        fetch("http://localhost:3000/api/gifs/" + gifId + "/comments", {
+                            method: "GET",
+                            headers: {
+                                "authorization": `${localStorage.getItem("token")}`
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(comments => {
 
-                if (this.gifs[i].id == document.getElementById("gif").dataset.id) {
-
-                    let gifId = this.gif.id;
-/* stockage des commentaires de chaque gif dans comments
-et des utilisateurs associés dans users*/
-                    fetch("http://localhost:3000/api/gifs/" + gifId + "/comments")
-                    .then(res => res.json())
-                    .then(data => {
-                        this.comments = data;
-
-                        for (let k = 0; k < this.comments.length; k++) {
+                            for (let k = 0; k < comments.commentaires.length; k++) {
                 /* ici userId est l'id de l'utilisateur associé à chaque commentaire */
-                            let userId = this.comments[k].user_id;
-                            fetch('http:localhost:3000/api/auth/profile/' + userId)
-                            .then(res => res.json())
-                            .then(user => {
-                                this.users.push(user);
-/* affichage des commentaires */
-                                let container = document.getElementById("container");
-                                let commentaire = document.createElement("div");
-                                let content = document.createElement("p");
-                                let profilImg = document.createElement("img");
-                                commentaire.appendChild(content);
-                                commentaire.appendChild(profilImg);
-                                container.appendChild(commentaire);
+                                let userId = comments.commentaires[k].user_id;
+                                fetch('http://localhost:3000/api/auth/profile/' + userId, {
+                                    method: "GET",
+                                    headers: {
+                                        "authorization": `${localStorage.getItem("token")}`
+                                    }
+                                })
+                                .then(res => res.json())
+                                .then(user => {
 
-                                content.textContent = this.comments[k].contenu;
-                                profilImg.setAttribute("src", this.users[k].photo_url);
+/* affichage des commentaires */
+                                    let containerBox = document.getElementsByClassName("containerBox");
+                                    containerBox[i].style.display = "block";
+                                    let commentaire = document.createElement("div");
+                                    let content = document.createElement("p");
+                                    let profilImg = document.createElement("img");
+                                    profilImg.setAttribute("title", user.user.prenom + " " + user.user.nom);
+                                    commentaire.appendChild(content);
+                                    commentaire.appendChild(profilImg);
+                                    containerBox[i].appendChild(commentaire);
+
+                                    content.textContent = comments.commentaires[k].contenu;
+                                    profilImg.setAttribute("src", user.user.photo_url);
 
 /* ici userId est celui de l'utilisateur connecté :
 vérification de s'il est en mesure de supprimer un commentaire
 (s'il en est l'auteur, ou s'il est modérateur) */
-                                userId = JSON.parse(localStorage.getItem("userId"));
+                                    userId = JSON.parse(localStorage.getItem("userId"));
 
-                                fetch('http:localhost:3000/api/auth/profile/' + userId)
-                                .then(res => res.json())
-                                .then(user => {
-                                    if (userId === this.comments[k].user_id || user.moderateur == 1) {
+                                    fetch('http://localhost:3000/api/auth/profile/' + userId, {
+                                        method: "GET",
+                                        headers: {
+                                            "authorization": `${localStorage.getItem("token")}`
+                                        }
+                                    })
+                                    .then(res => res.json())
+                                    .then(user => {
+                                        if (userId === comments.commentaires[k].user_id || user.user.moderateur == 1) {
 /* le cas échéant, création du bouton supprimer */
-                                        let deleteBtn = document.createElement("p");
-                                        deleteBtn.textContent = "Supprimer";
-                                        container.appendChild(deleteBtn);
+                                            let deleteBtn = document.createElement("p");
+                                            deleteBtn.textContent = "Supprimer";
+                                            deleteBtn.setAttribute("data-id", comments.commentaires[k].id);
+                                            commentaire.appendChild(deleteBtn);
 
-                                        let idComment = this.comments[k].id;
-                                        let gifId = this.gifs[i].id;
+                                            let idComment = comments.commentaires[k].id;
+                                            let gifId = gifs.gifs[i].id;
 
 /* et attribution de la requête de suppression à l'événement clic */
-                                        deleteBtn.addEventListener("click", () => {
-                                            fetch("http://localhost:3000/api/gifs/" + gifId + "/comments/" + idComment, {
-                                                method: "DELETE",
-                                                headers: {
-                                                    "Accept": "application/json",
-                                                    "Content-Type": "application/json"
+                                            deleteBtn.addEventListener("click", (a) => {
+
+                                                if (comments.commentaires[k].id == a.target.dataset.id) {
+                                                    commentaire.remove()
                                                 }
+
+                                                fetch("http://localhost:3000/api/gifs/" + gifId + "/comments/" + idComment, {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Accept": "application/json",
+                                                        "Content-Type": "application/json",
+                                                        "authorization": `${localStorage.getItem("token")}`
+                                                    }
+                                                })
+                                                .then(res => res.json())
                                             })
-                                            .then(res => res.json())
-                                        })
-                                    }
+                                        }
+                                    })
                                 })
-                            })
-                        }
-                    })
+                            }
+                        })
                     .catch(err => console.log(err.message))
+                    }
                 }
-            }
+            })
         },
 /* ajouter un commentaire :
 on cache le bouton ajouter et on fait apparaître de quoi écrire et poster */
-        addComment() {
-            for (let i = 0; i < this.gifs.length; i++) {
+        addComment(e) {
 
-                document.getElementById("addComment").style.visibility = "hidden";
+            e.target.style.visibility = "hidden";
 
-                let commentBox = document.getElementById("commentBox");
-                let commentInput = document.createElement("input");
-                commentInput.setAttribute("type", "text");
-                commentInput.setAttribute("name", "commentaire");
-                commentInput.setAttribute("id", "commentaire");
-                commentBox.appendChild(commentInput);
-                let contenu = commentInput.value;
-
-                let postBtn = document.createElement("p");
-                commentBox.appendChild(postBtn);
-                postBtn.textContent = "Ajouter";
-                postBtn.addEventListener("click", () => {
+            fetch("http://localhost:3000/api/gifs/", {
+                method: "GET",
+                headers: {
+                    "authorization": `${localStorage.getItem("token")}`
+                }
+            })
+            .then(res => res.json())
+            .then(gifs => {
                 
-                    commentInput.remove();
-                    postBtn.remove();
-                    document.getElementById("addComment").style.visibility = "visible";
+                for (let i = 0; i < gifs.gifs.length; i++) {
                     
-                    let userId = JSON.parse(localStorage.getItem("userId"));
-                    let gifId = this.gifs[i].id;
+                    if (gifs.gifs[i].id == e.target.dataset.id) {
 
-                    fetch("http://localhost:3000/api/gifs/" + gifId + "/comments", {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ contenu, userId })
-                    })
-                    .then(res => res.json())
-                    .then(data => this.comments.push(data))
-                    .catch(err => console.log(err.message))
-                })
-            }
+                        let commentBox = document.getElementsByClassName("commentBox")[i];
+                        let commentInput = document.createElement("input");
+                        commentInput.setAttribute("type", "text");
+                        commentInput.setAttribute("name", "commentaire");
+                        commentInput.classList.add("commentaire");
+                        commentBox.appendChild(commentInput);
+
+                        let postBtn = document.createElement("p");
+                        commentBox.appendChild(postBtn);
+                        postBtn.textContent = "Ajouter";
+                        postBtn.addEventListener("click", () => {
+                            
+                            if (commentInput.value == "") {
+                                alert("Votre commentaire est vide !")
+                            } else {
+                                
+                                let contenu = commentInput.value;
+
+                                commentInput.remove();
+                                postBtn.remove();
+                                e.target.style.visibility = "visible";
+                                document.getElementsByClassName("showComments")[i].style.display = "block";
+                                document.getElementsByClassName("containerBox")[i].style.display = "none";
+                                document.getElementsByClassName("containerBox")[i].innerHTML = '';
+                                
+                                let userId = localStorage.getItem("userId");
+                                let gifId = gifs.gifs[i].id;
+
+                                fetch("http://localhost:3000/api/gifs/" + gifId + "/comments", {
+                                    method: "POST",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json",
+                                        "authorization": `${localStorage.getItem("token")}`
+                                    },
+                                    body: JSON.stringify({ contenu, userId })
+                                })
+                                .then(res => res.json())
+                                .catch(err => console.log(err.message))
+                            }
+                        })
+                    }
+                }
+            })
         }
-
     }
 }
 </script>
 
-<style scoped>
-#supprimer {
-    visibility: hidden;
+<style>
+.profile, .containerBox img {
+    height: 60px;
+}
+
+.containerBox {
+    background-color: rgb(179, 179, 179);
 }
 </style>
