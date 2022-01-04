@@ -12,3 +12,9 @@ export default {
     }
 }
 </script>
+
+<style>
+#photo {
+    margin: 10px 0;
+}
+</style>

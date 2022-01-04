@@ -1,4 +1,7 @@
 <template>
+    <br>
+    <router-link to="/home" class="btn" style="margin-right: 75%">Accueil</router-link>
+    <br>
     <h2>Mettre à jour mon profil</h2>
 <!-- formulaire pour modifier un ou plusieurs champs -->
     <div>
@@ -118,7 +121,7 @@ export default {
             let mail = document.getElementById("mail").value;
             let mot_de_passe = document.getElementById("mot_de_passe").value;
             let mot_de_passe_confirm = document.getElementById("mot_de_passe_confirm").value;
-            let photo = document.getElementById("photo");
+            let photo = document.getElementById("photo").value;
                 
             if (nom !== "" && document.getElementById("nomErrMsg").textContent === "" &&
                 prenom !== "" && document.getElementById("prenomErrMsg").textContent === "" &&
@@ -141,7 +144,7 @@ export default {
                 })
                 .then(res => res.json())
                 .then(() => {
-                    // window.location = "http://localhost:8080/#/home";
+                    window.location = "http://localhost:8080/#/home";
                 })
                 .catch(err => console.log(err.message))
             } else {
@@ -151,3 +154,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+h2 {
+    margin: 40px 0;
+}
+</style>

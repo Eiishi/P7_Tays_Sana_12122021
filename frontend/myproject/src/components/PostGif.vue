@@ -1,6 +1,6 @@
 <template>
     <!-- <font-awesome-icon icon="fa-regular fa-circle-plus" /> -->
-    <p @click="showContainer">+</p>
+    <p @click="showContainer" class="btn" id="plus">+</p>
     <div id="container">
         <h2>Ajouter un gif</h2>
         <div>
@@ -29,7 +29,7 @@ export default {
     mounted() {
         function validateName(string) {
             /*eslint-disable-next-line*/
-            return /^[a-z\-\é\è\ë\ï]+( [a-z\é\è\ë\ï]+)*$/i.test(string);
+            return /^[a-z0-9\-\é\è\ë\ï]+( [a-z0-9\é\è\ë\ï]+)*$/i.test(string);
         }
 
         function validateUrl(string) {
@@ -123,10 +123,10 @@ export default {
                     alert("Veuillez choisir un mode de saisie.")
                 }
                 document.getElementById("container").style.display = "none";
+                location.reload();
             } else {
                 alert("Titre invalide.")
             }
-            location.reload();
         }
     }
 }
@@ -135,5 +135,14 @@ export default {
 <style scoped>
 #urlBox, #fileBox, #container {
     display: none;
+}
+#plus {
+    margin: 20px auto;
+}
+#container {
+    background-color: rgba(98, 81, 255, 0.4);
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 20px;
 }
 </style>

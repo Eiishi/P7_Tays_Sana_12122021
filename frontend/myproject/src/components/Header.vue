@@ -16,9 +16,12 @@ export default {
 
 <style scoped>
 header img {
-height: 50px;
+    height: 50px;
+    border-radius: 50px;
+    border: 3px rgba(98, 81, 255, 0.664) solid;
 }
 header {
-    background-color: gray;
+    background-color: rgb(45, 45, 45);
+    padding: 1px 0px;
 }
 </style>

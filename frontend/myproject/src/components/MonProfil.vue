@@ -2,10 +2,6 @@
     <div>
         <router-link to="/profile">
         <img id="profilePic">
-        <p></p>
-        </router-link>
-        <router-link to="/">
-        <p>Déconnexion</p>
         </router-link>
         <router-view></router-view>
     </div>
@@ -30,7 +26,6 @@ export default {
         .then(res => res.json())
         .then(user => {
             document.getElementById("profilePic").setAttribute("src", user.user.photo_url);
-            document.querySelector("p").textContent = user.user.prenom + " " + user.user.nom;
         })
         .catch(err => console.log(err.message))
     }
@@ -40,5 +35,6 @@ export default {
 <style scoped>
 img {
     height: 40px;
+    margin-right: 80%;
 }
 </style>

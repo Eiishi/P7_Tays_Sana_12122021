@@ -1,6 +1,8 @@
 <template>
-    <h1>Mon profil</h1>
-    <img>
+    <br>
+    <router-link to="/home" class="btn" style="margin-right: 75%">Accueil</router-link>
+    <h2>Mon profil</h2>
+    <img id="profile">
     <p id="nom"></p>
     <p id="mail"></p>
     <div>
@@ -9,6 +11,9 @@
         </router-link>
         <router-link to="/">
         <button @click="deleteProfile">Supprimer le profil</button>
+        </router-link>
+        <router-link to="/">
+        <p class="btn" id="deconnexion">Déconnexion</p>
         </router-link>
         <router-view></router-view>
     </div>
@@ -34,7 +39,7 @@ export default {
         })
         .then(res => res.json())
         .then(user => {
-            document.querySelector("img").setAttribute("src", user.user.photo_url);
+            document.getElementById("profile").setAttribute("src", user.user.photo_url);
             document.getElementById("nom").textContent = user.user.nom + " " + user.user.prenom;
             document.getElementById("mail").textContent = user.user.mail;
         })
@@ -60,7 +65,13 @@ export default {
 </script>
 
 <style scoped>
-img {
+#profile {
     height: 100px;
+}
+#nom, #mail {
+    font-weight: bold;
+}
+#deconnexion {
+    margin: auto;
 }
 </style>

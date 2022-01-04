@@ -106,8 +106,8 @@ exports.updateAccount = (req, res, next) => {
   } else {
     bcrypt.hash(req.body.mot_de_passe, 10)
     .then(hash => {
-      if (req.file) {
-        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}", photo_url = "${req.protocol}://${req.get('host')}/photos/${req.file.filename}" WHERE id = ${req.params.userId};`, 
+      if (req.body.photo !== "") {
+        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}", photo_url = "${req.protocol}://${req.get('host')}/photos/${req.body.photo.split("fakepath\\").pop()}" WHERE id = ${req.params.userId};`, 
         function(err, result) {
           if (err) throw err;
           return res.status(200).json({ message: "successful !" })
