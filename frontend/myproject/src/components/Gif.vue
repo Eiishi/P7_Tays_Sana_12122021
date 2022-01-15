@@ -1,5 +1,5 @@
 <template>
-    <div id="displayGifs"></div>
+    <div ref="displayGifs"></div>
 </template>
 
 <script>
@@ -12,8 +12,8 @@ export default {
 
         document.getElementById("nav").style.display = "none";
 
-/* requêtes pour récupérer chaque gif et l'utilisateur associé
-dans les objets gif et gifUser */
+/* requêtes pour récupérer tous les gifs */
+
         fetch("http://localhost:3000/api/gifs/", {
             method: "GET",
             headers: {
@@ -23,6 +23,8 @@ dans les objets gif et gifUser */
         .then(res => res.json())
         .then(gifs => {
             for (let i = 0; i < gifs.gifs.length; i++) {
+
+/* pour chaque gif, récupération de l'utilisateur associé */
 
                 let userId = gifs.gifs[i].user_id;
                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
@@ -36,7 +38,8 @@ dans les objets gif et gifUser */
 
             /*affichage de l'utilisateur qui a posté le gif :
             photo de profil + nom*/
-                    let displayGifs = document.getElementById("displayGifs");
+
+                    let displayGifs = this.$refs.displayGifs;
 
                     let profileContainer = document.createElement("div");
                     profileContainer.classList.add("container");
@@ -88,12 +91,13 @@ dans les objets gif et gifUser */
                     displayGifs.appendChild(supprimer);
                     displayGifs.appendChild(showComments);
                     displayGifs.appendChild(containerBox);
-            /* affichage des données stockées */
+            /* affichage des données de l'API */
                     profile.setAttribute("src", user.user.photo_url);
                     gifImg.setAttribute("src", gifs.gifs[i].url);
                 })
 
-/* requête pour vérifier que l'utilisateur a le droit de supprimer le gif */
+/* requête pour vérifier que l'utilisateur a le droit de supprimer le gif :
+on récupère l'userId de l'utilisateur connecté */
                 userId = JSON.parse(localStorage.getItem("userId"));
 
                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
@@ -106,6 +110,9 @@ dans les objets gif et gifUser */
                 .then(res => res.json())
                 .then(user => {
 
+/* et on le compare à l'id de l'utilisateur ayant posté chacun des gifs
+on vérifie également si l'utilisateur est modérateur
+==> affichage ou non du bouton supprimer */
                     if (userId !== gifs.gifs[i].user_id && user.user.moderateur === 0) {
                         document.getElementsByClassName("supprimer")[i].style.visibility = "hidden"
                     }
@@ -128,6 +135,9 @@ dans les objets gif et gifUser */
             .then(gifs => {
 
                 for (let i = 0; i < gifs.gifs.length; i++) {
+
+/* condition de filtrage des gifs récupérés
+on compare leur id à celui du gif sur lequel on clique */
 
                     if (gifs.gifs[i].id == e.target.dataset.id) {
                     
@@ -161,6 +171,8 @@ dans les objets gif et gifUser */
             .then(gifs => {
                 
                 for (let i = 0; i < gifs.gifs.length; i++) {
+
+/* pour chaque gif, on crée la boîte de commentaires et le bouton d'ajout */
                     
                     if (gifs.gifs[i].id == e.target.dataset.id) {
                         e.target.style.display = "none";
@@ -192,6 +204,11 @@ dans les objets gif et gifUser */
                                 let userId = localStorage.getItem("userId");
                                 let gifId = gifs.gifs[i].id;
 
+/* ajout d'un commentaire :
+après vérification qu'il n'est pas vide, récupération de l'id du gif en question
+et requête POST pour ajouter le commentaire
+fermeture de la boîte pour permettre une mise à jour instantanée */
+
                                 fetch("http://localhost:3000/api/gifs/" + gifId + "/comments", {
                                     method: "POST",
                                     headers: {
@@ -211,6 +228,9 @@ dans les objets gif et gifUser */
                                 .catch(err => console.log(err.message))
                             }
                         })
+
+/* pour chaque gif, on stocke leur id
+et on requête l'API pour récupérer tous leurs commentaires */
                         
                         let gifId = gifs.gifs[i].id;
 
@@ -223,7 +243,10 @@ dans les objets gif et gifUser */
                         .then(res => res.json())
                         .then(comments => {
 
+/* récupération de la liste des commentaires de chaque gif */
+
                             for (let k = 0; k < comments.commentaires.length; k++) {
+                                
                 /* ici userId est l'id de l'utilisateur associé à chaque commentaire */
                                 let userId = comments.commentaires[k].user_id;
                                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
@@ -234,7 +257,6 @@ dans les objets gif et gifUser */
                                 })
                                 .then(res => res.json())
                                 .then(user => {
-
 /* affichage des commentaires */
                                     let containerBox = document.getElementsByClassName("containerBox");
                                     containerBox[i].style.display = "block";
@@ -339,7 +361,7 @@ vérification de s'il est en mesure de supprimer un commentaire
     max-width: 20px;
 }
 .delete:hover {
-    background-color: rgba(255, 0, 0, 0.692);
+    background-color: rgb(126, 0, 0);
 }
 .containerBox {
     background-color: rgba(98, 81, 255, 0.4);

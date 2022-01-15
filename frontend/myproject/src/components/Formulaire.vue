@@ -2,23 +2,23 @@
     <h1>Bienvenue sur Gagomania !</h1>
     <div>
         <label for="nom">Nom : </label><br>
-        <input type="text" name="nom" id="nom"><br>
-        <p id="nomErrMsg" class="error"></p>
+        <input type="text" name="nom" ref="nom"><br>
+        <p ref="nomErrMsg" class="error"></p>
         <label for="prenom">Prénom : </label><br>
-        <input type="text" name="prenom" id="prenom"><br>
-        <p id="prenomErrMsg" class="error"></p>
+        <input type="text" name="prenom" ref="prenom"><br>
+        <p ref="prenomErrMsg" class="error"></p>
         <label for="mail">E-mail : </label><br>
-        <input type="email" name="mail" id="mail"><br>
-        <p id="mailErrMsg" class="error"></p>
+        <input type="email" name="mail" ref="mail"><br>
+        <p ref="mailErrMsg" class="error"></p>
         <label for="mot_de_passe">Mot de passe : </label><br>
-        <input type="password" name="mot_de_passe" id="mot_de_passe"><br>
-        <p id="mdpErrMsg" class="error"></p>
+        <input type="password" name="mot_de_passe" ref="mot_de_passe"><br>
+        <p ref="mdpErrMsg" class="error"></p>
         <label for="mot_de_passe_confirm">Confirmer mot de passe : </label><br>
-        <input type="password" name="mot_de_passe_confirm" id="mot_de_passe_confirm"><br>
-        <p id="mdpErrMsg2" class="error"></p>
+        <input type="password" name="mot_de_passe_confirm" ref="mot_de_passe_confirm"><br>
+        <p ref="mdpErrMsg2" class="error"></p>
         <label for="photo">Photo de profil (optionnel)</label><br>
-        <input type="file" name="photo" accept="image/png, image/jpeg" id="photo"><br>
-        <button id="inscription" @click="pressed">S'inscrire</button>
+        <input type="file" name="photo" accept="image/png, image/jpeg" ref="photo"><br>
+        <button ref="inscription" @click="pressed">S'inscrire</button>
     </div>
 </template>
 
@@ -30,6 +30,8 @@ export default {
         }
     },
     mounted() {
+
+/* fonctions de validation des champs d'entrée */
 
         function validateName(string) {
             /*eslint-disable-next-line*/
@@ -44,68 +46,77 @@ export default {
             return /\S{8,}/.test(password);
         }
 
-        let nom = document.getElementById("nom");
-        let prenom = document.getElementById("prenom");
-        let mail = document.getElementById("mail");
-        let mot_de_passe = document.getElementById("mot_de_passe");
-        let mot_de_passe_confirm = document.getElementById("mot_de_passe_confirm");
+        let nom = this.$refs.nom;
+        let prenom = this.$refs.prenom;
+        let mail = this.$refs.mail;
+        let mot_de_passe = this.$refs.mot_de_passe;
+        let mot_de_passe_confirm = this.$refs.mot_de_passe_confirm;
+
+/* vérifications des valeurs entrées
+si incorrectes : apparition d'un message d'erreur */
 
         nom.addEventListener("change", () => {
 
             if (validateName(nom.value) == false || nom.value == "") {
-                document.getElementById("nomErrMsg").textContent = "Veuillez entrer un nom valide."
+                this.$refs.nomErrMsg.textContent = "Veuillez entrer un nom valide."
             } else {
-                document.getElementById("nomErrMsg").textContent = ""
+                this.$refs.nomErrMsg.textContent = ""
             }
         })
         prenom.addEventListener("change", () => {
 
             if (validateName(prenom.value) == false || prenom.value == "") {
-                document.getElementById("prenomErrMsg").textContent = "Veuillez entrer un prénom valide."
+                this.$refs.prenomErrMsg.textContent = "Veuillez entrer un prénom valide."
             } else {
-                document.getElementById("prenomErrMsg").textContent = ""
+                this.$refs.prenomErrMsg.textContent = ""
             }
         })
         mail.addEventListener("change", () => {
 
             if (validateEmail(mail.value) == false || mail.value == "") {
-                document.getElementById("mailErrMsg").textContent = "Veuillez entrer une adresse mail valide."
+                this.$refs.mailErrMsg.textContent = "Veuillez entrer une adresse mail valide."
             } else {
-                document.getElementById("mailErrMsg").textContent = ""
+                this.$refs.mailErrMsg.textContent = ""
             }
         })
         mot_de_passe.addEventListener("change", () => {
 
             if (validatePassword(mot_de_passe.value) == false || mot_de_passe.value == "") {
-                document.getElementById("mdpErrMsg").textContent = "Niveau de sécurité du mot de passe trop faible."
+                this.$refs.mdpErrMsg.textContent = "Niveau de sécurité du mot de passe trop faible."
             } else {
-                document.getElementById("mdpErrMsg").textContent = ""
+                this.$refs.mdpErrMsg.textContent = ""
             }
         })
         mot_de_passe_confirm.addEventListener("change", () => {
 
             if (mot_de_passe.value !== mot_de_passe_confirm.value || mot_de_passe_confirm.value == "") {
-                document.getElementById("mdpErrMsg2").textContent = "Veuillez confirmer votre mot de passe."
+                this.$refs.mdpErrMsg2.textContent = "Veuillez confirmer votre mot de passe."
             } else {
-                document.getElementById("mdpErrMsg2").textContent = ""
+                this.$refs.mdpErrMsg2.textContent = ""
             }
         })
     },
     methods: {
         pressed() {
 
-            let nom = document.getElementById("nom").value;
-            let prenom = document.getElementById("prenom").value;
-            let mail = document.getElementById("mail").value;
-            let mot_de_passe = document.getElementById("mot_de_passe").value;
-            let mot_de_passe_confirm = document.getElementById("mot_de_passe_confirm").value;
-            let photo = document.getElementById("photo");
+/* au clic sur le bouton s'inscrire
+vérification de tous les champs d'entrée */
+
+            let nom = this.$refs.nom.value;
+            let prenom = this.$refs.prenom.value;
+            let mail = this.$refs.mail.value;
+            let mot_de_passe = this.$refs.mot_de_passe.value;
+            let mot_de_passe_confirm = this.$refs.mot_de_passe_confirm.value;
+            let photo = this.$refs.photo;
                 
-            if (nom !== "" && document.getElementById("nomErrMsg").textContent === "" &&
-                prenom !== "" && document.getElementById("prenomErrMsg").textContent === "" &&
-                mail !== "" && document.getElementById("mailErrMsg").textContent === "" &&
-                mot_de_passe !== "" && document.getElementById("mdpErrMsg").textContent === "" &&
-                mot_de_passe_confirm !== "" && document.getElementById("mdpErrMsg2").textContent === "") {  
+            if (nom !== "" && this.$refs.nomErrMsg.textContent === "" &&
+                prenom !== "" && this.$refs.prenomErrMsg.textContent === "" &&
+                mail !== "" && this.$refs.mailErrMsg.textContent === "" &&
+                mot_de_passe !== "" && this.$refs.mdpErrMsg.textContent === "" &&
+                mot_de_passe_confirm !== "" && this.$refs.mdpErrMsg2.textContent === "") {  
+
+/* envoi de la requête POST
+pour inscrire l'utilisateur */
                     
                 fetch("http://localhost:3000/api/auth/signup", {
                     method: "POST",
@@ -116,16 +127,21 @@ export default {
                     body: JSON.stringify({ nom, prenom, mail, mot_de_passe, photo })
                 })
                 .then(res => res.json())
-                .then(data => {
-                    localStorage.userId = JSON.stringify(data.userId);
-                    localStorage.token = JSON.stringify(data.token);
-                })
-                .then(() => {
-                    window.location = "http://localhost:8080/#/home";
-                    document.getElementById("nav").style.display = "none";
+                .then(res => {
+                    if (res.error) {
+                        this.$refs.mdpErrMsg2.textContent = res.error
+                    } else {
+
+/* sauvegarde du userId et du token dans le localStorage
+redirection vers la page d'accueil */
+
+                        localStorage.userId = JSON.stringify(res.userId);
+                        localStorage.token = JSON.stringify(res.token);
+                        location.hash = '#/home';
+                        this.$refs.nav.style.display = "none";
+                    }
                 })
                 .catch(err => console.log(err.message))
-
             } else {
                 alert("Votre formulaire contient des erreurs ou des champs non renseignés.")
             }

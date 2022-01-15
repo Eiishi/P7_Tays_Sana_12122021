@@ -30,7 +30,7 @@ button, .btn {
 }
 
 button:hover, .btn:hover {
-  background-color: rgba(98, 81, 255, 0.356);
+  background-color: rgba(61, 47, 194, 0.356);
 }
 
 .container {

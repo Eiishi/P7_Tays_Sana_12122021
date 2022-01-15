@@ -2,12 +2,12 @@
     <h1>Bienvenue sur Gagomania !</h1>
     <div>
         <label for="mail">E-mail : </label><br>
-        <input type="email" name="mail" id="mail"><br>
-        <p id="mailErrMsg" class="error"></p>
+        <input type="email" name="mail" ref="mail"><br>
+        <p ref="mailErrMsg" class="error"></p>
         <label for="mot_de_passe">Mot de passe : </label><br>
-        <input type="password" name="mot_de_passe" id="mot_de_passe"><br>
-        <p id="mdpErrMsg" class="error"></p>
-    <button id="connexion" @click="pressed">Se connecter</button>
+        <input type="password" name="mot_de_passe" ref="mot_de_passe"><br>
+        <p ref="mdpErrMsg" class="error"></p>
+    <button ref="connexion" @click="pressed">Se connecter</button>
     </div>
 </template>
 
@@ -22,6 +22,8 @@ export default {
 
         document.getElementById("nav").style.display = "block";
 
+/* fonctions de validations des champs d'entrée */
+
         function validateEmail(email) {
             return /\S+@\S+\.\S+/.test(email);
         }
@@ -30,34 +32,43 @@ export default {
             return /\S{8,}/.test(password);
         }
 
-        let mail = document.getElementById("mail");
-        let mot_de_passe = document.getElementById("mot_de_passe");
+        let mail = this.$refs.mail;
+        let mot_de_passe = this.$refs.mot_de_passe;
+
+/* écoute du changement sur les champs d'entrée
+et vérification du contenu */
 
         mail.addEventListener("change", () => {
 
             if (validateEmail(mail.value) == false || mail.value == "") {
-                document.getElementById("mailErrMsg").textContent = "Veuillez entrer une adresse mail valide."
+                this.$refs.mailErrMsg.textContent = "Veuillez entrer une adresse mail valide."
             } else {
-                document.getElementById("mailErrMsg").textContent = ""
+                this.$refs.mailErrMsg.textContent = ""
             }
         })
         mot_de_passe.addEventListener("change", () => {
 
             if (validatePassword(mot_de_passe.value) == false || mot_de_passe.value == "") {
-                document.getElementById("mdpErrMsg").textContent = "Veuillez saisir votre mot de passe."
+                this.$refs.mdpErrMsg.textContent = "Veuillez saisir votre mot de passe."
             } else {
-                document.getElementById("mdpErrMsg").textContent = ""
+                this.$refs.mdpErrMsg.textContent = ""
             }
         })
 
     },
     methods: {
         pressed() {
-            let mail = document.getElementById("mail").value;
-            let mot_de_passe = document.getElementById("mot_de_passe").value;
 
-            if (mail !== "" && document.getElementById("mailErrMsg").textContent === "" &&
-                mot_de_passe !== "" && document.getElementById("mdpErrMsg").textContent === "") {  
+/* vérification des champs d'entrée */
+
+            let mail = this.$refs.mail.value;
+            let mot_de_passe = this.$refs.mot_de_passe.value;
+
+            if (mail !== "" && this.$refs.mailErrMsg.textContent === "" &&
+                mot_de_passe !== "" && this.$refs.mdpErrMsg.textContent === "") {  
+
+/* si pas d'erreur, envoi de la requête POST
+pour connecter l'utilisateur */
 
                 fetch("http://localhost:3000/api/auth/login", {
                     method: "POST",
@@ -68,13 +79,19 @@ export default {
                     body: JSON.stringify({ mail, mot_de_passe })
                 })
                 .then(res => res.json())
-                .then(data => {
-                    localStorage.userId = JSON.stringify(data.userId);
-                    localStorage.token = JSON.stringify(data.token);
-                })
-                .then(() => {
-                    window.location = "http://localhost:8080/#/home";
-                    document.getElementById("nav").style.display = "none";
+                .then(res => {
+                    if (res.error) {
+                        this.$refs.mdpErrMsg.textContent = res.error
+                    } else {
+
+/* enregistrement du userId et du token dans le localStorage
+redirection vers la page d'accueil */
+
+                        localStorage.userId = JSON.stringify(res.userId);
+                        localStorage.token = JSON.stringify(res.token);
+                        location.hash = '#/home';
+                        this.$refs.nav.style.display = "none";
+                    }
                 })
                 .catch(err => console.log(err.message))
             } else {

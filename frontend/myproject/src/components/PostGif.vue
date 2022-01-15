@@ -5,15 +5,15 @@
         <h2>Ajouter un gif</h2>
         <div>
             <label for="titre">Titre : </label>
-            <input type="text" name="titre" id="titre">
-            <p id="titreErrMsg" class="error"></p>
+            <input type="text" name="titre" ref="titre">
+            <p ref="titreErrMsg" class="error"></p>
             <button @click="showUrlBox">Saisir une URL</button> <button @click="showFileBox">Ajouter un fichier</button>
             <div id="urlBox">
-            <input type="text" name="url" id="url">
-            <p id="urlErrMsg" class="error"></p>
+            <input type="text" name="url" ref="url">
+            <p ref="urlErrMsg" class="error"></p>
             </div>
             <div id="fileBox">
-            <input type="file" accept="image/png, image/jpeg" name="file" id="file">
+            <input type="file" accept="image/png, image/jpeg" name="file" ref="file">
             </div>
             <button @click="addGif">Ajouter</button>
         </div>
@@ -27,6 +27,9 @@ export default {
         return {}
     },
     mounted() {
+
+/* fonctions de vérification des champs de titre et d'URL */
+
         function validateName(string) {
             /*eslint-disable-next-line*/
             return /^[a-z0-9\-\é\è\ë\ï]+( [a-z0-9\é\è\ë\ï]+)*$/i.test(string);
@@ -34,58 +37,76 @@ export default {
 
         function validateUrl(string) {
             /*eslint-disable-next-line*/
-            return /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/i.test(string);
+            return /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)(.gif)$/i.test(string);
         }
 
-        let titre = document.getElementById("titre");
-        let url = document.getElementById("url");
+        let titre = this.$refs.titre;
+        let url = this.$refs.url;
 
         titre.addEventListener("change", () => {
 
             if (validateName(titre.value) == false || titre.value == "") {
-                document.getElementById("titreErrMsg").textContent = "Veuillez entrer un titre valide."
+                this.$refs.titreErrMsg.textContent = "Veuillez entrer un titre valide."
             } else {
-                document.getElementById("titreErrMsg").textContent = ""
+                this.$refs.titreErrMsg.textContent = ""
             }
         })
         url.addEventListener("change", () => {
 
             if (validateUrl(url.value) == false || url.value == "") {
-                document.getElementById("urlErrMsg").textContent = "Veuillez entrer une URL valide."
+                this.$refs.urlErrMsg.textContent = "Veuillez entrer une URL valide, et au format .gif."
             } else {
-                document.getElementById("urlErrMsg").textContent = ""
+                this.$refs.urlErrMsg.textContent = ""
             }
         })
 
     },
     methods: {
+
+/* affichage de la boîte d'ajout d'un gif */
+
         showContainer() {
             document.getElementById("container").style.display = "block";
         },
+
+/* affichage de l'option "ajouter une URL" */
+
         showUrlBox() {
             document.getElementById("urlBox").style.display = "block";
             if (document.getElementById("fileBox").style.display == "block") {
                 document.getElementById("fileBox").style.display = "none"
             }
         },
+
+/* affichage de l'option "ajouter un fichier" */
+
         showFileBox() {
             document.getElementById("fileBox").style.display = "block";
             if (document.getElementById("urlBox").style.display == "block") {
                 document.getElementById("urlBox").style.display = "none"
             }
         },
+
+/* fonction pour ajouter un gif */
+
         addGif() {
 
             let userId = localStorage.getItem("userId");
-            let titre = document.getElementById("titre").value;
+            let titre = this.$refs.titre.value;
 
-            if (titre !== "" && document.getElementById("titreErrMsg").textContent === "") {  
+/* vérification que le titre a un format correct */
+
+            if (titre !== "" && this.$refs.titreErrMsg.textContent === "") {
+
+/* requête différente selon le choix de format de gif envoyé */
 
                 if (document.getElementById("urlBox").style.display == "block") {
                     
-                    let url = document.getElementById("url").value;
+                    let url = this.$refs.url.value;
 
-                    if (url !== "" && document.getElementById("urlErrMsg").textContent === "") {
+                    if (url !== "" && this.$refs.urlErrMsg.textContent === "") {
+
+/* si gif envoyé par URL, envoi de requête à l'API avec l'url pour traitement */
 
                         fetch("http://localhost:3000/api/gifs/", {
                         method: "POST",
@@ -97,6 +118,11 @@ export default {
                         body: JSON.stringify({ titre, userId, url })
                         })
                         .then(res => res.json())
+                        .then(res => {
+                            if (res.error) {
+                                this.$refs.titreErrMsg.textContent = res.error
+                            }
+                        })
                         .catch(err => console.log(err.message))
 
                     } else {
@@ -105,9 +131,7 @@ export default {
 
                 } else if (document.getElementById("fileBox").style.display == "block") {
 
-                    // let inputFile = document.getElementById("file");
-                    // let data = new FormData();
-                    // data.append('file', inputFile.files[0]);
+/* si gif envoyé par fichier, envoi de requête à l'API avec le fichier pour traitement */
 
                     fetch("http://localhost:3000/api/gifs/", {
                         method: "POST",

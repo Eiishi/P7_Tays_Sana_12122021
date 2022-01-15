@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 /*import du middleware d'authentification et de multer configuré pour les photos*/
-const multer = require("../middlewares/multer-config-img");
 const auth = require("../middlewares/auth");
+const multer = require("../middlewares/multer-config-img");
 
 /*import du contrôleur*/
 const userCtrl = require("../controllers/user");

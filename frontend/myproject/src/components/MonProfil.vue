@@ -1,7 +1,7 @@
 <template>
     <div>
         <router-link to="/profile">
-        <img id="profilePic">
+        <img ref="profilePic">
         </router-link>
         <router-view></router-view>
     </div>
@@ -15,6 +15,9 @@ export default {
         }
     },
     mounted() {
+
+/* récupération des informations de l'utilisateur connecté (photo de profil) */
+
         let userId = JSON.parse(localStorage.getItem("userId"));
 
         fetch('http://localhost:3000/api/auth/profile/' + userId, {
@@ -25,7 +28,7 @@ export default {
         })
         .then(res => res.json())
         .then(user => {
-            document.getElementById("profilePic").setAttribute("src", user.user.photo_url);
+            this.$refs.profilePic.setAttribute("src", user.user.photo_url);
         })
         .catch(err => console.log(err.message))
     }

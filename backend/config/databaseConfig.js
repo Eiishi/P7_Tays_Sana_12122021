@@ -1,3 +1,5 @@
+/* configuration de la base de données */
+
 const mysql = require('mysql2');
 require('dotenv').config();
 

@@ -10,7 +10,7 @@
         <button>Modifier le profil</button>
         </router-link>
         <router-link to="/">
-        <button @click="deleteProfile">Supprimer le profil</button>
+        <button @click="deleteProfile" id="delete">Supprimer le profil</button>
         </router-link>
         <router-link to="/">
         <p class="btn" id="deconnexion">Déconnexion</p>
@@ -28,6 +28,8 @@ export default {
     mounted() {
 
         document.getElementById("nav").style.display = "none";
+
+/* récupération des informations de l'utilisateur connecté */
 
         let userId = JSON.parse(localStorage.getItem("userId"));
 
@@ -47,6 +49,9 @@ export default {
     },
     methods: {
         deleteProfile() {
+
+/* requête pour supprimer le profil utilisateur */
+
             let userId = JSON.parse(localStorage.getItem("userId"));
 
             fetch("http://localhost:3000/api/auth/profile/" + userId, {
@@ -65,6 +70,12 @@ export default {
 </script>
 
 <style scoped>
+#delete {
+    background-color: red;
+}
+#delete:hover {
+    background-color: rgb(126, 0, 0);
+}
 #profile {
     height: 100px;
 }
