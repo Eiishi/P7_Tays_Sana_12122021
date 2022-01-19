@@ -36,12 +36,13 @@ export default {
         fetch('http://localhost:3000/api/auth/profile/' + userId, {
             method: "GET",
             headers: {
-                "authorization": `${localStorage.getItem("token")}`
+                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
         })
         .then(res => res.json())
         .then(user => {
             document.getElementById("profile").setAttribute("src", user.user.photo_url);
+            document.getElementById("profile").setAttribute("alt", "Photo de profil de l'utilisateur " + user.user.prenom + " " + user.user.nom);
             document.getElementById("nom").textContent = user.user.nom + " " + user.user.prenom;
             document.getElementById("mail").textContent = user.user.mail;
         })
@@ -59,7 +60,7 @@ export default {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "authorization": `${localStorage.getItem("token")}`
+                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
             .then(res => res.json())
             .catch(err => console.log(err.message))

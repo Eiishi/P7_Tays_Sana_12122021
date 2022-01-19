@@ -23,12 +23,13 @@ export default {
         fetch('http://localhost:3000/api/auth/profile/' + userId, {
             method: "GET",
             headers: {
-                "authorization": `${localStorage.getItem("token")}`
+                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
         })
         .then(res => res.json())
         .then(user => {
             this.$refs.profilePic.setAttribute("src", user.user.photo_url);
+            this.$refs.profilePic.setAttribute("alt", "Photo de profil de l'utilisateur " + user.user.prenom + " " + user.user.nom);
         })
         .catch(err => console.log(err.message))
     }

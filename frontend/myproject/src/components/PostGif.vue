@@ -113,7 +113,7 @@ export default {
                         headers: {
                             "Accept": "application/json",
                             "Content-Type": "application/json",
-                            "authorization": `${localStorage.getItem("token")}`
+                            "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                         },
                         body: JSON.stringify({ titre, userId, url })
                         })
@@ -137,7 +137,7 @@ export default {
                         method: "POST",
                         headers: {
                             "Accept": "application/json",
-                            "authorization": `${localStorage.getItem("token")}`
+                            "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                         },
                         body: JSON.stringify({ titre, userId,  })
                     })

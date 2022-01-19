@@ -14,12 +14,6 @@
         <label for="mail">E-mail : </label><br>
         <input type="email" name="mail" ref="mail"><br>
         <p ref="mailErrMsg" class="error"></p>
-        <label for="mot_de_passe">Mot de passe : </label><br>
-        <input type="password" name="mot_de_passe" ref="mot_de_passe"><br>
-        <p ref="mdpErrMsg" class="error"></p>
-        <label for="mot_de_passe_confirm">Confirmer mot de passe : </label><br>
-        <input type="password" name="mot_de_passe_confirm" ref="mot_de_passe_confirm"><br>
-        <p ref="mdpErrMsg2" class="error"></p>
         <label for="photo">Photo de profil (optionnel)</label><br>
         <input type="file" name="photo" accept="image/png, image/jpeg" ref="photo"><br>
         <button ref="miseAJour" @click="pressed">Mettre à jour</button>
@@ -27,7 +21,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 export default {
     name: "ChangeProfil",
     data() {
@@ -48,15 +42,9 @@ export default {
             return /\S+@\S+\.\S+/.test(email);
         }
 
-        function validatePassword(password) {
-            return /\S{8,}/.test(password);
-        }
-
         let nom = this.$refs.nom;
         let prenom = this.$refs.prenom;
         let mail = this.$refs.mail;
-        let mot_de_passe = this.$refs.mot_de_passe;
-        let mot_de_passe_confirm = this.$refs.mot_de_passe_confirm;
 
 /* écoute du changement sur les champs et vérification des valeurs */
 
@@ -84,22 +72,6 @@ export default {
                 this.$refs.mailErrMsg.textContent = ""
             }
         })
-        mot_de_passe.addEventListener("change", () => {
-
-            if (validatePassword(mot_de_passe.value) == false || mot_de_passe.value == "") {
-                this.$refs.mdpErrMsg.textContent = "Niveau de sécurité du mot de passe trop faible."
-            } else {
-                this.$refs.mdpErrMsg.textContent = ""
-            }
-        })
-        mot_de_passe_confirm.addEventListener("change", () => {
-
-            if (mot_de_passe.value !== mot_de_passe_confirm.value || mot_de_passe_confirm.value == "") {
-                this.$refs.mdpErrMsg2.textContent = "Veuillez confirmer votre mot de passe."
-            } else {
-                this.$refs.mdpErrMsg2.textContent = ""
-            }
-        })
 
         let userId = JSON.parse(localStorage.getItem("userId"));
 
@@ -108,7 +80,7 @@ export default {
         fetch('http://localhost:3000/api/auth/profile/' + userId, {
             method: "GET",
             headers: {
-                "authorization": `${localStorage.getItem("token")}`
+                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
         })
         .then(res => res.json())
@@ -129,19 +101,17 @@ envoi de la requête PUT */
             let nom = this.$refs.nom.value;
             let prenom = this.$refs.prenom.value;
             let mail = this.$refs.mail.value;
-            let mot_de_passe = this.$refs.mot_de_passe.value;
-            let mot_de_passe_confirm = this.$refs.mot_de_passe_confirm.value;
-            let photo = this.$refs.photo.files[0];
                 
             if (nom !== "" && this.$refs.nomErrMsg.textContent === "" &&
                 prenom !== "" && this.$refs.prenomErrMsg.textContent === "" &&
-                mail !== "" && this.$refs.mailErrMsg.textContent === "" &&
-                mot_de_passe !== "" && this.$refs.mdpErrMsg.textContent === "" &&
-                mot_de_passe_confirm !== "" && this.$refs.mdpErrMsg2.textContent === "") {  
-
-                let modified = `nom = "${nom}", prenom = "${prenom}", mail = "${mail}"`;
+                mail !== "" && this.$refs.mailErrMsg.textContent === "") {  
+                    
+                    // let modified = `nom = "${nom}", prenom = "${prenom}", mail = "${mail}"`;
 
                 let userId = JSON.parse(localStorage.getItem("userId"));
+
+                let photo = this.$refs.photo.files[0];
+                console.log(photo);
 
                 let formData = new FormData();
                 formData.append('photo', photo);
@@ -150,37 +120,48 @@ envoi de la requête PUT */
 
                 console.log(photoFile);
 
-                axios.put("http://localhost:3000/api/auth/profile/" + userId, {
-                    modified, mot_de_passe, photoFile
-                }, {
-                    headers: {
-                        "authorization": `${localStorage.getItem("token")}`
-                    }
-                })
-                .then(res => console.log(res))
-                .then(res => {
-                    if (res.error) {
-                        this.$refs.mdpErrMsg2.textContent = res.error;
-                        location.hash = "#/home";
-                    }
-                })
-                .catch(err => console.log(err))
-
-                // fetch("http://localhost:3000/api/auth/profile/" + userId, {
+                // axios({
+                //     url: "http://localhost:3000/api/auth/profile/" + userId,
                 //     method: "PUT",
                 //     headers: {
-                //         "Accept": "application/json",
-                //         "Content-Type": "multipart/form-data",
-                //         "authorization": `${localStorage.getItem("token")}`
+                //         authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                 //     },
-                //     body: JSON.stringify({ modified, mot_de_passe, photoFile })
+                //     data: photoFile
                 // })
-                // .then(res => res.json())
-                // .then(res => console.log(res))
-                // // .then(() => {
-                // //     location.hash = '#/home';
-                // // })
-                // .catch(err => console.log(err.message))
+                // .then((res) => console.log(res))
+                // .catch((err) => console.log(err))
+
+                // axios.put("http://localhost:3000/api/auth/profile/" + userId, {
+                //     photoFile
+                // }, {
+                //     headers: {
+                //         'Content-Type': 'multipart/form-data; boundary=myBoundary',
+                //         "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
+                //     }
+                // })
+                // .then(res => {
+                //     if (res.error) {
+                //         this.$refs.mdpErrMsg2.textContent = res.error;
+                //     } else {
+                //         // location.hash = "#/home";
+                //     }
+                // })
+                // .catch(err => console.log(err))
+
+                fetch("http://localhost:3000/api/auth/profile/" + userId, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "multipart/form-data; boundary=--------------------------605269247338716467427004",
+                        "authorization": "Bearer " + JSON.parse(localStorage.getItem("token"))
+                    },
+                    body: photo
+                })
+                .then(res => res.json())
+                .then(res => console.log(res))
+                // .then(() => {
+                //     location.hash = '#/home';
+                // })
+                .catch(err => console.log(err.message))
             } else {
                 alert("Votre formulaire contient des erreurs ou des champs non renseignés.")
             }

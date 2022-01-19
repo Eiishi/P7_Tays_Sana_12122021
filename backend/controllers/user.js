@@ -22,6 +22,9 @@ exports.signup = (req, res) => {
       function validateEmail(email) {
           return /\S+@\S+\.\S+/.test(email);
       }
+
+      console.log(req.body.nom);
+      console.log(validateName(req.body.nom));
   
       if (validatePassword(req.body.mot_de_passe) == false) {
         return res.status(400).json({ error: 'Niveau de sécurité du mot de passe trop faible.'});
@@ -144,57 +147,48 @@ la valeur par défaut est assignée */
 exports.updateAccount = (req, res, next) => {
 
   console.log(req.body);
+  console.log(req.file);
 
-/* vérification des champs d'entrée */
+  res.status(200).json({ file: req.file })
 
-  function validatePassword(password) {
-    return /\S{8,}/.test(password);
-  }
+// /* vérification des champs d'entrée */
 
-  function validateName(string) {
-    return /^[a-z\-\é\è\ë\ï]+( [a-z\é\è\ë\ï]+)*$/i.test(string);
-  }
+//   function validateName(string) {
+//     return /^[a-z\-\é\è\ë\ï]+( [a-z\é\è\ë\ï]+)*$/i.test(string);
+//   }
 
-  function validateEmail(email) {
-      return /\S+@\S+\.\S+/.test(email);
-  }
+//   function validateEmail(email) {
+//       return /\S+@\S+\.\S+/.test(email);
+//   }
 
-  if (validatePassword(req.body.mot_de_passe) == false) {
-    return res.status(400).json({ error: 'Niveau de sécurité du mot de passe trop faible.'});
-  } else if (validateName(req.body.nom == false)) {
-    return res.status(400).json({ error: 'Veuillez entrer un nom valide.'});
-  } else if (validateName(req.body.prenom == false)) {
-    return res.status(400).json({ error: 'Veuillez entrer un prénom valide.'});
-  } else if (validateEmail(req.body.mail == false)) {
-    return res.status(400).json({ error: 'Veuillez entrer une adresse mail valide.'});      
-  } else {
+//    if (validateName(req.body.nom == false)) {
+//     return res.status(400).json({ error: 'Veuillez entrer un nom valide.'});
+//   } else if (validateName(req.body.prenom == false)) {
+//     return res.status(400).json({ error: 'Veuillez entrer un prénom valide.'});
+//   } else if (validateEmail(req.body.mail == false)) {
+//     return res.status(400).json({ error: 'Veuillez entrer une adresse mail valide.'});      
+//   } else {
 
-/* hashage du nouveau mdp, ou ré-hachage de l'ancien */
-
-   bcrypt.hash(req.body.mot_de_passe, 10)
-    .then(hash => {
-
-/* si envoi de fichier pour changer sa photo de profil:
-mise à jour du champ photo_url avec le filename paramétré par multer */
+// /* si envoi de fichier pour changer sa photo de profil:
+// mise à jour du champ photo_url avec le filename paramétré par multer */
     
-      if (req.body.photoFile && req.body.photoFile !== "") {
-        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}", photo_url = "${req.protocol}://${req.get('host')}/photos/${req.body.photoFile.name}" WHERE id = ${req.params.userId};`, 
-        function(err, result) {
-          if (err) throw err;
-          return res.status(200).json({ message: "successful !" })
-        })
+//       if (req.body.photoFile && req.body.photoFile !== "") {
+//         db.db.query(`UPDATE user SET ${req.body.modified}, photo_url = "${req.protocol}://${req.get('host')}/photos/${req.file.filename}" WHERE id = ${req.params.userId};`, 
+//         function(err, result) {
+//           if (err) throw err;
+//           return res.status(200).json({ message: "successful !" })
+//         })
 
-/* sinon, mise à jour des champs sans modifier photo_url */
+// /* sinon, mise à jour des champs sans modifier photo_url */
 
-      } else {
-        db.db.query(`UPDATE user SET ${req.body.modified}, mot_de_passe = "${hash}" WHERE id = ${req.params.userId};`, 
-        function(err, result) {
-          if (err) throw err;
-          return res.status(200).json({ message: "successful !" })
-        })
-      }
-    })
-  }
+//       } else {
+//         db.db.query(`UPDATE user SET ${req.body.modified}, WHERE id = ${req.params.userId};`, 
+//         function(err, result) {
+//           if (err) throw err;
+//           return res.status(200).json({ message: "successful !" })
+//         })
+//       }
+//   }
 };
 
 /* supprimer son profil */

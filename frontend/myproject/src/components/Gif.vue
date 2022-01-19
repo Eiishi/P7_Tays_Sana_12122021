@@ -17,7 +17,7 @@ export default {
         fetch("http://localhost:3000/api/gifs/", {
             method: "GET",
             headers: {
-                "authorization": `${localStorage.getItem("token")}`
+                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
         })
         .then(res => res.json())
@@ -30,7 +30,7 @@ export default {
                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
                     method: "GET",
                     headers: {
-                        "authorization": `${localStorage.getItem("token")}`
+                        "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                     }
                 })
                 .then(res => res.json())
@@ -93,7 +93,9 @@ export default {
                     displayGifs.appendChild(containerBox);
             /* affichage des données de l'API */
                     profile.setAttribute("src", user.user.photo_url);
+                    profile.setAttribute("alt", "Photo de profil de l'utilisateur " + user.user.prenom + " " + user.user.nom);
                     gifImg.setAttribute("src", gifs.gifs[i].url);
+                    gifImg.setAttribute("alt", "Gif dont le titre est " + gifs.gifs[i].titre);
                 })
 
 /* requête pour vérifier que l'utilisateur a le droit de supprimer le gif :
@@ -103,7 +105,7 @@ on récupère l'userId de l'utilisateur connecté */
                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
                     method: "GET",
                     headers: {
-                        "authorization": `${localStorage.getItem("token")}`
+                        "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                     }
 
                 })
@@ -128,7 +130,7 @@ on vérifie également si l'utilisateur est modérateur
             fetch("http://localhost:3000/api/gifs/", {
                 method: "GET",
                 headers: {
-                    "authorization": `${localStorage.getItem("token")}`
+                    "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                 }
             })
             .then(res => res.json())
@@ -147,7 +149,7 @@ on compare leur id à celui du gif sur lequel on clique */
                             headers: {
                                 "Accept": "application/json",
                                 "Content-Type": "application/json",
-                                "authorization": `${localStorage.getItem("token")}`
+                                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                             }
                         })
                         .then(res => res.json())
@@ -164,7 +166,7 @@ on compare leur id à celui du gif sur lequel on clique */
             fetch("http://localhost:3000/api/gifs/", {
                 method: "GET",
                 headers: {
-                    "authorization": `${localStorage.getItem("token")}`
+                    "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                 }
             })
             .then(res => res.json())
@@ -214,7 +216,7 @@ fermeture de la boîte pour permettre une mise à jour instantanée */
                                     headers: {
                                         "Accept": "application/json",
                                         "Content-Type": "application/json",
-                                        "authorization": `${localStorage.getItem("token")}`
+                                        "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                                     },
                                     body: JSON.stringify({ contenu, userId })
                                 })
@@ -237,7 +239,7 @@ et on requête l'API pour récupérer tous leurs commentaires */
                         fetch("http://localhost:3000/api/gifs/" + gifId + "/comments", {
                             method: "GET",
                             headers: {
-                                "authorization": `${localStorage.getItem("token")}`
+                                "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                             }
                         })
                         .then(res => res.json())
@@ -252,7 +254,7 @@ et on requête l'API pour récupérer tous leurs commentaires */
                                 fetch('http://localhost:3000/api/auth/profile/' + userId, {
                                     method: "GET",
                                     headers: {
-                                        "authorization": `${localStorage.getItem("token")}`
+                                        "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                                     }
                                 })
                                 .then(res => res.json())
@@ -274,6 +276,7 @@ et on requête l'API pour récupérer tous leurs commentaires */
 
                                     content.textContent = comments.commentaires[k].contenu;
                                     profilImg.setAttribute("src", user.user.photo_url);
+                                    profilImg.setAttribute("alt", "Photo de profil de l'utilisateur " + user.user.prenom + " " + user.user.nom);
 
 /* ici userId est celui de l'utilisateur connecté :
 vérification de s'il est en mesure de supprimer un commentaire
@@ -283,7 +286,7 @@ vérification de s'il est en mesure de supprimer un commentaire
                                     fetch('http://localhost:3000/api/auth/profile/' + userId, {
                                         method: "GET",
                                         headers: {
-                                            "authorization": `${localStorage.getItem("token")}`
+                                            "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                                         }
                                     })
                                     .then(res => res.json())
@@ -312,7 +315,7 @@ vérification de s'il est en mesure de supprimer un commentaire
                                                     headers: {
                                                         "Accept": "application/json",
                                                         "Content-Type": "application/json",
-                                                        "authorization": `${localStorage.getItem("token")}`
+                                                        "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
                                                     }
                                                 })
                                                 .then(res => res.json())

@@ -128,6 +128,7 @@ pour inscrire l'utilisateur */
                 })
                 .then(res => res.json())
                 .then(res => {
+                    console.log(res);
                     if (res.error) {
                         this.$refs.mdpErrMsg2.textContent = res.error
                     } else {
