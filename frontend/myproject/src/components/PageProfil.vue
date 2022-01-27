@@ -43,7 +43,7 @@ export default {
         .then(user => {
             document.getElementById("profile").setAttribute("src", user.user.photo_url);
             document.getElementById("profile").setAttribute("alt", "Photo de profil de l'utilisateur " + user.user.prenom + " " + user.user.nom);
-            document.getElementById("nom").textContent = user.user.nom + " " + user.user.prenom;
+            document.getElementById("nom").textContent = user.user.prenom + " " + user.user.nom;
             document.getElementById("mail").textContent = user.user.mail;
         })
         .catch(err => console.log(err.message))
@@ -55,6 +55,8 @@ export default {
 
             let userId = JSON.parse(localStorage.getItem("userId"));
 
+            console.log(userId);
+
             fetch("http://localhost:3000/api/auth/profile/" + userId, {
             method: "DELETE",
             headers: {
@@ -62,9 +64,10 @@ export default {
                 "Content-Type": "application/json",
                 "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
             }
+            })
             .then(res => res.json())
             .catch(err => console.log(err.message))
-            })
+            
         }
     }
 }

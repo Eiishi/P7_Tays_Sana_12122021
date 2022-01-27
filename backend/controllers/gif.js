@@ -25,7 +25,7 @@ exports.shareGif = (req, res, next) => {
 
     function validateName(string) {
         /*eslint-disable-next-line*/
-        return /^[a-z0-9\-\é\è\ë\ï]+( [a-z0-9\é\è\ë\ï]+)*$/i.test(string);
+        return /^[a-z0-9\-\é\è\ë\ï\']+( [a-z0-9\é\è\ë\ï\']+)*$/i.test(string);
     }
 
     function validateUrl(string) {
@@ -41,49 +41,23 @@ exports.shareGif = (req, res, next) => {
         return res.status(400).json({ error: "Veuillez entrer un titre valide."})
     } else {
 
-/* disjonction des cas selon envoi d'un fichier ou d'une URL */
-/* si fichier :
-récupération du filename paramétré par multer
-et insertion dans l'url du gif
-puis renvoi du gif ajouté */
-        
-        if (req.file) {
-            db.db.query(`INSERT INTO gif 
-            (titre, url, user_id, date) VALUES 
-            ("${req.body.titre}", "${req.protocol}://${req.get('host')}/gifs/${req.file.filename}, ${req.body.userId}", "${date.toLocaleString()}");`,
-            function(err, result) {
-                if (err) throw err;
-                return res.status(200).json({
-                    gif: {
-                        id: result.insertId,
-                        titre: req.body.titre,
-                        url: req.get('host') + "/gifs/" + req.file.filename,
-                        userId: req.body.userId,
-                        date: date.toLocaleString()
-                    }
-                }) 
-            }) 
-            
-        } else {
-/* si envoi d'url :
-simple remplissage du champ url par l'url du gif */
+/* ajout du gif à la base de données */
 
-            db.db.query(`INSERT INTO gif 
-            (titre, url, user_id, date) VALUES 
-            ("${req.body.titre}", "${req.body.url}", "${req.body.userId}", "${date.toLocaleString()}");`,
-            function(err, result) {
-                if (err) throw err;
-                return res.status(200).json({
-                    gif: {
-                        id: result.insertId,
-                        titre: req.body.titre,
-                        url: req.body.url,
-                        userId: req.body.userId,
-                        date: date.toLocaleString()
-                    }
-                })
+        db.db.query(`INSERT INTO gif 
+        (titre, url, user_id, date) VALUES 
+        ("${req.body.titre}", "${req.body.url}", "${req.body.userId}", "${date.toLocaleString()}");`,
+        function(err, result) {
+            if (err) throw err;
+            return res.status(200).json({
+                gif: {
+                    id: result.insertId,
+                    titre: req.body.titre,
+                    url: req.body.url,
+                    userId: req.body.userId,
+                    date: date.toLocaleString()
+                }
             })
-        }
+        })
     }
 }
 

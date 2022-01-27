@@ -7,13 +7,10 @@
             <label for="titre">Titre : </label>
             <input type="text" name="titre" ref="titre">
             <p ref="titreErrMsg" class="error"></p>
-            <button @click="showUrlBox">Saisir une URL</button> <button @click="showFileBox">Ajouter un fichier</button>
+            <button @click="showUrlBox">Saisir une URL</button>
             <div id="urlBox">
             <input type="text" name="url" ref="url">
             <p ref="urlErrMsg" class="error"></p>
-            </div>
-            <div id="fileBox">
-            <input type="file" accept="image/png, image/jpeg" name="file" ref="file">
             </div>
             <button @click="addGif">Ajouter</button>
         </div>
@@ -32,7 +29,7 @@ export default {
 
         function validateName(string) {
             /*eslint-disable-next-line*/
-            return /^[a-z0-9\-\é\è\ë\ï]+( [a-z0-9\é\è\ë\ï]+)*$/i.test(string);
+            return /^[a-z0-9\-\é\è\ë\ï\']+( [a-z0-9\é\è\ë\ï\']+)*$/i.test(string);
         }
 
         function validateUrl(string) {
@@ -69,21 +66,12 @@ export default {
             document.getElementById("container").style.display = "block";
         },
 
-/* affichage de l'option "ajouter une URL" */
+/* affichage du champ de saisie d'URL" */
 
         showUrlBox() {
             document.getElementById("urlBox").style.display = "block";
             if (document.getElementById("fileBox").style.display == "block") {
                 document.getElementById("fileBox").style.display = "none"
-            }
-        },
-
-/* affichage de l'option "ajouter un fichier" */
-
-        showFileBox() {
-            document.getElementById("fileBox").style.display = "block";
-            if (document.getElementById("urlBox").style.display == "block") {
-                document.getElementById("urlBox").style.display = "none"
             }
         },
 
@@ -106,7 +94,7 @@ export default {
 
                     if (url !== "" && this.$refs.urlErrMsg.textContent === "") {
 
-/* si gif envoyé par URL, envoi de requête à l'API avec l'url pour traitement */
+/* envoi de requête à l'API avec l'url pour traitement */
 
                         fetch("http://localhost:3000/api/gifs/", {
                         method: "POST",
@@ -129,22 +117,8 @@ export default {
                         alert("URL invalide.")
                     }
 
-                } else if (document.getElementById("fileBox").style.display == "block") {
-
-/* si gif envoyé par fichier, envoi de requête à l'API avec le fichier pour traitement */
-
-                    fetch("http://localhost:3000/api/gifs/", {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json",
-                            "authorization": `Bearer ${JSON.parse(localStorage.getItem("token"))}`
-                        },
-                        body: JSON.stringify({ titre, userId,  })
-                    })
-                    .then(res => res.json())
-                    .catch(err => console.log(err.message))
                 } else {
-                    alert("Veuillez choisir un mode de saisie.")
+                    alert("Veuillez saisir une URL.")
                 }
                 document.getElementById("container").style.display = "none";
                 location.reload();
@@ -157,7 +131,7 @@ export default {
 </script>
 
 <style scoped>
-#urlBox, #fileBox, #container {
+#urlBox, #container {
     display: none;
 }
 #plus {

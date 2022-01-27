@@ -23,15 +23,15 @@ Sinon :
     Cliquez sur l'option "Download ZIP" et téléchargez le fichier.
 
 Ouvrez le fichier dans un éditeur de code et ouvrez un terminal.
-(Si vous utilisez Visual Studio Code, un onglet Terminal en haut de la fenêtre vous permet d'ouvrir un nouveau temrinal.)
+(Si vous utilisez Visual Studio Code, que vous pouvez installer ici https://code.visualstudio.com/Download, un onglet Terminal en haut de la fenêtre vous permet d'ouvrir un nouveau temrinal.)
 
 Exécutez ensuite les commandes suivantes :
 
-cd backend
+- cd backend
 
-npm install
+- npm install
 
-node server
+- node server
 
 Vous devriez voir s'afficher les messages suivants :
 Listening on port 3000
@@ -39,12 +39,12 @@ Connexion à MySQL réussie !
 
 Ensuite, ouvrez un nouveau terminal et exécutez les commandes :
 
-cd frontend
+- cd frontend
 
-cd myproject
+- cd myproject
 
-npm install
+- npm install
 
-npm run serve
+- npm run serve
 
-Le projet est prêt à être ouvert sur l'un des URL donnés dans votre terminal.
+Après chargement, le projet est prêt à être ouvert sur l'un des URL donnés dans votre terminal, à la ligne "App running at:"

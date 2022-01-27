@@ -16,8 +16,6 @@
         <label for="mot_de_passe_confirm">Confirmer mot de passe : </label><br>
         <input type="password" name="mot_de_passe_confirm" ref="mot_de_passe_confirm"><br>
         <p ref="mdpErrMsg2" class="error"></p>
-        <label for="photo">Photo de profil (optionnel)</label><br>
-        <input type="file" name="photo" accept="image/png, image/jpeg" ref="photo"><br>
         <button ref="inscription" @click="pressed">S'inscrire</button>
     </div>
 </template>
@@ -107,7 +105,6 @@ vérification de tous les champs d'entrée */
             let mail = this.$refs.mail.value;
             let mot_de_passe = this.$refs.mot_de_passe.value;
             let mot_de_passe_confirm = this.$refs.mot_de_passe_confirm.value;
-            let photo = this.$refs.photo;
                 
             if (nom !== "" && this.$refs.nomErrMsg.textContent === "" &&
                 prenom !== "" && this.$refs.prenomErrMsg.textContent === "" &&
@@ -124,11 +121,10 @@ pour inscrire l'utilisateur */
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ nom, prenom, mail, mot_de_passe, photo })
+                    body: JSON.stringify({ nom, prenom, mail, mot_de_passe })
                 })
                 .then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     if (res.error) {
                         this.$refs.mdpErrMsg2.textContent = res.error
                     } else {

@@ -4,7 +4,6 @@ const router = express.Router();
 
 /*import du middleware d'authentification et de multer configuré pour les gifs*/
 const auth = require("../middlewares/auth");
-const multer = require("../middlewares/multer-config-gif");
 
 /*import contrôleur*/
 const gifCtrl = require("../controllers/gif");
@@ -18,7 +17,7 @@ const gifCtrl = require("../controllers/gif");
  * suppression d'un commentaire
  */
 router.get('/', auth, gifCtrl.getAllGifs);
-router.post('/', auth, multer, gifCtrl.shareGif);
+router.post('/', auth, gifCtrl.shareGif);
 router.delete('/:gifId', auth, gifCtrl.deleteGif);
 router.get('/:gifId/comments', auth, gifCtrl.showComments);
 router.post('/:gifId/comments', auth, gifCtrl.addComment);
