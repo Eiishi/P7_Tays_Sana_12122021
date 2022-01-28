@@ -18,8 +18,8 @@ h1 {
 
 button, .btn {
   cursor: pointer;
-  width: 30%;
-  margin: 20px;
+  /* width: 30%; */
+  margin:10px;
   padding: 10px;
   border-radius: 30px;
   color: #fff;

@@ -89,4 +89,11 @@ export default {
 #deconnexion {
     margin: auto;
 }
+
+@media (min-width: 500px) {
+.btn, button {
+    width: 30%;
+    margin: 10px;
+}
+}
 </style>

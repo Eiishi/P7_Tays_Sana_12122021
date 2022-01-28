@@ -39,12 +39,12 @@ Connexion à MySQL réussie !
 
 Ensuite, ouvrez un nouveau terminal et exécutez les commandes :
 
-- cd frontend
-
-- cd myproject
+- cd frontend\myproject
 
 - npm install
 
 - npm run serve
+
+--- les commandes "npm install" ne sont à exécuter que lors de votre première utilisation ---
 
 Après chargement, le projet est prêt à être ouvert sur l'un des URL donnés dans votre terminal, à la ligne "App running at:"
