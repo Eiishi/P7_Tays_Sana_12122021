@@ -345,7 +345,7 @@ vérification de s'il est en mesure de supprimer un commentaire
     font-size: 20px;
 }
 .date {
-    font-size: 12px;
+    font-size: 13px;
 }
 .gif {
     margin: 10px auto;
